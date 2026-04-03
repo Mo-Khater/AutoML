@@ -1,0 +1,792 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Accelera Report</title>
+          <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #000000;
+            color: #ffffff;
+            margin-left:30px
+            }
+            h1 {
+            color: #ffcc00;
+            text-align: center;
+            }
+            h2{
+            font-style:italic;
+            text-align: center;
+            }
+            h3{
+            color: #ffee00;
+            }
+            h4 {
+            color: #ffcc00; 
+            }
+            
+            table{
+            border-collapse: collapse;
+            width: 80%;
+            }
+             th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: center;
+            }
+            .metric-container {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            }
+            div{
+                margin:40px 10px ;
+            }
+        </style>
+        </head>
+        <body>
+        <h1>Accelera Report</h1>
+        <div>
+<h2>Data Overview</h2>
+<h3>First 5 rows of the dataset:</h3>
+
+        <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>age</th>
+      <th>sex</th>
+      <th>cp</th>
+      <th>trestbps</th>
+      <th>chol</th>
+      <th>fbs</th>
+      <th>restecg</th>
+      <th>thalach</th>
+      <th>exang</th>
+      <th>oldpeak</th>
+      <th>slope</th>
+      <th>ca</th>
+      <th>thal</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>52</td>
+      <td>1</td>
+      <td>0</td>
+      <td>125</td>
+      <td>212</td>
+      <td>0</td>
+      <td>1</td>
+      <td>168</td>
+      <td>0</td>
+      <td>1.0</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>53</td>
+      <td>1</td>
+      <td>0</td>
+      <td>140</td>
+      <td>203</td>
+      <td>1</td>
+      <td>0</td>
+      <td>155</td>
+      <td>1</td>
+      <td>3.1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>70</td>
+      <td>1</td>
+      <td>0</td>
+      <td>145</td>
+      <td>174</td>
+      <td>0</td>
+      <td>1</td>
+      <td>125</td>
+      <td>1</td>
+      <td>2.6</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>61</td>
+      <td>1</td>
+      <td>0</td>
+      <td>148</td>
+      <td>203</td>
+      <td>0</td>
+      <td>1</td>
+      <td>161</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>62</td>
+      <td>0</td>
+      <td>0</td>
+      <td>138</td>
+      <td>294</td>
+      <td>1</td>
+      <td>1</td>
+      <td>106</td>
+      <td>0</td>
+      <td>1.9</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table></div>
+<div>
+<h2>Data Overview After lowering dataset</h2>
+<h3>First 5 rows of the dataset:</h3>
+
+        <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>age</th>
+      <th>sex</th>
+      <th>cp</th>
+      <th>trestbps</th>
+      <th>chol</th>
+      <th>fbs</th>
+      <th>restecg</th>
+      <th>thalach</th>
+      <th>exang</th>
+      <th>oldpeak</th>
+      <th>slope</th>
+      <th>ca</th>
+      <th>thal</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>52</td>
+      <td>1</td>
+      <td>0</td>
+      <td>125</td>
+      <td>212</td>
+      <td>0</td>
+      <td>1</td>
+      <td>168</td>
+      <td>0</td>
+      <td>1.0</td>
+      <td>2</td>
+      <td>2</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>53</td>
+      <td>1</td>
+      <td>0</td>
+      <td>140</td>
+      <td>203</td>
+      <td>1</td>
+      <td>0</td>
+      <td>155</td>
+      <td>1</td>
+      <td>3.1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>70</td>
+      <td>1</td>
+      <td>0</td>
+      <td>145</td>
+      <td>174</td>
+      <td>0</td>
+      <td>1</td>
+      <td>125</td>
+      <td>1</td>
+      <td>2.6</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>61</td>
+      <td>1</td>
+      <td>0</td>
+      <td>148</td>
+      <td>203</td>
+      <td>0</td>
+      <td>1</td>
+      <td>161</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>62</td>
+      <td>0</td>
+      <td>0</td>
+      <td>138</td>
+      <td>294</td>
+      <td>1</td>
+      <td>1</td>
+      <td>106</td>
+      <td>0</td>
+      <td>1.9</td>
+      <td>1</td>
+      <td>3</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table><h3>Data Information:</h3>
+<pre><class 'pandas.core.frame.DataFrame'>
+RangeIndex: 1025 entries, 0 to 1024
+Data columns (total 14 columns):
+ #   Column    Non-Null Count  Dtype  
+---  ------    --------------  -----  
+ 0   age       1025 non-null   int64  
+ 1   sex       1025 non-null   int64  
+ 2   cp        1025 non-null   int64  
+ 3   trestbps  1025 non-null   int64  
+ 4   chol      1025 non-null   int64  
+ 5   fbs       1025 non-null   int64  
+ 6   restecg   1025 non-null   int64  
+ 7   thalach   1025 non-null   int64  
+ 8   exang     1025 non-null   int64  
+ 9   oldpeak   1025 non-null   float64
+ 10  slope     1025 non-null   int64  
+ 11  ca        1025 non-null   int64  
+ 12  thal      1025 non-null   int64  
+ 13  target    1025 non-null   int64  
+dtypes: float64(1), int64(13)
+memory usage: 112.2 KB
+</pre>
+<h3>Data Shape:</h3>
+<p> (1025, 14)</p> 
+<h3>Numerical Statistics:</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>age</th>
+      <th>sex</th>
+      <th>cp</th>
+      <th>trestbps</th>
+      <th>chol</th>
+      <th>fbs</th>
+      <th>restecg</th>
+      <th>thalach</th>
+      <th>exang</th>
+      <th>oldpeak</th>
+      <th>slope</th>
+      <th>ca</th>
+      <th>thal</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.00000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+      <td>1025.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>54.434146</td>
+      <td>0.695610</td>
+      <td>0.942439</td>
+      <td>131.611707</td>
+      <td>246.00000</td>
+      <td>0.149268</td>
+      <td>0.529756</td>
+      <td>149.114146</td>
+      <td>0.336585</td>
+      <td>1.071512</td>
+      <td>1.385366</td>
+      <td>0.754146</td>
+      <td>2.323902</td>
+      <td>0.513171</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>9.072290</td>
+      <td>0.460373</td>
+      <td>1.029641</td>
+      <td>17.516718</td>
+      <td>51.59251</td>
+      <td>0.356527</td>
+      <td>0.527878</td>
+      <td>23.005724</td>
+      <td>0.472772</td>
+      <td>1.175053</td>
+      <td>0.617755</td>
+      <td>1.030798</td>
+      <td>0.620660</td>
+      <td>0.500070</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>29.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>94.000000</td>
+      <td>126.00000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>71.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>48.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>120.000000</td>
+      <td>211.00000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>132.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>56.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>130.000000</td>
+      <td>240.00000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>152.000000</td>
+      <td>0.000000</td>
+      <td>0.800000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>2.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>61.000000</td>
+      <td>1.000000</td>
+      <td>2.000000</td>
+      <td>140.000000</td>
+      <td>275.00000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>166.000000</td>
+      <td>1.000000</td>
+      <td>1.800000</td>
+      <td>2.000000</td>
+      <td>1.000000</td>
+      <td>3.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>77.000000</td>
+      <td>1.000000</td>
+      <td>3.000000</td>
+      <td>200.000000</td>
+      <td>564.00000</td>
+      <td>1.000000</td>
+      <td>2.000000</td>
+      <td>202.000000</td>
+      <td>1.000000</td>
+      <td>6.200000</td>
+      <td>2.000000</td>
+      <td>4.000000</td>
+      <td>3.000000</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Missing Values:</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Missing Values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>age</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>sex</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>cp</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>trestbps</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>chol</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>fbs</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>restecg</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>thalach</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>exang</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>oldpeak</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>slope</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>ca</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>thal</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>target</th>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Duplicates:</h3>
+<p> number of duplicates rows: 723</p>
+<p> Percentage of duplicates rows: 70.53658536585365 %</p>
+</div>
+<div>
+<h2> After Drop Duplicates</h2>
+<h3>Data Shape:</h3>
+<p> (302, 14)</p> 
+<h3>Duplicates:</h3>
+<p> number of duplicates rows: 0</p>
+<p> Percentage of duplicates rows: 0.0 %</p>
+</div>
+<div>
+<h2> Train / Validation Split</h2>
+<h3> Val Size</h3>
+<p>0.2</p>
+<h3>Training set</h3>
+X_train shape : (241, 13)</p>
+y_train shape : (241,)</p>
+<h3>validation set</h3>
+X_val shape : (61, 13)</p>
+y_val shape : (61,)</p>
+</div>
+<div>
+<h2>Drop Columns</h2>
+<p>No columns were dropped</p>
+</div>
+<div>
+<h2>Graphs</h2>
+<img src='.\graphs\age.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\sex.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\cp.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\trestbps.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\chol.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\fbs.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\restecg.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\thalach.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\exang.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\oldpeak.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\slope.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\ca.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\thal.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\target.png' style='max-width:100%; margin:10px 0;'/>
+<img src='.\graphs\correlation_matrix.png' style='max-width:100%; margin:10px 0;'/>
+</div>
+<div>
+<h2>Preprocessing</h2>
+<table>
+<tr><th>Column</th><th>Predicted Type</th><th>Preprocessing Steps</th></tr>
+<tr><td>age</td><td>Numerical</td><td>Fill Missing With Median -> Iqr Transform -> Standard Scaling </td></tr>
+<tr><td>sex</td><td>Binary</td><td>Fill Missing With Most Frequent -> Ordinal Encoding </td></tr>
+<tr><td>cp</td><td>Ordinal</td><td>Fill Missing With Most Frequent -> Ordinal Encoding </td></tr>
+<tr><td>trestbps</td><td>Numerical</td><td>Fill Missing With Median -> Iqr Transform -> Standard Scaling </td></tr>
+<tr><td>chol</td><td>Numerical</td><td>Fill Missing With Median -> Iqr Transform -> Standard Scaling </td></tr>
+<tr><td>fbs</td><td>Binary</td><td>Fill Missing With Most Frequent -> Ordinal Encoding </td></tr>
+<tr><td>restecg</td><td>Ordinal</td><td>Fill Missing With Most Frequent -> Ordinal Encoding </td></tr>
+<tr><td>thalach</td><td>Numerical</td><td>Fill Missing With Median -> Iqr Transform -> Standard Scaling </td></tr>
+<tr><td>exang</td><td>Binary</td><td>Fill Missing With Most Frequent -> Ordinal Encoding </td></tr>
+<tr><td>oldpeak</td><td>Continuous</td><td>Fill Missing With Median -> Iqr Transform -> Standard Scaling </td></tr>
+<tr><td>slope</td><td>Ordinal</td><td>Fill Missing With Most Frequent -> Ordinal Encoding </td></tr>
+<tr><td>ca</td><td>Ordinal</td><td>Fill Missing With Most Frequent -> Ordinal Encoding </td></tr>
+<tr><td>thal</td><td>Ordinal</td><td>Fill Missing With Most Frequent -> Ordinal Encoding </td></tr>
+<tr><td>target</td><td>Classification</td><td>Fill Missing With Most Frequent -> Label Encoding </td></tr>
+</table>
+</div>
+<div>
+<h2>After Preprocessing</h2>
+<h3>First 5 rows of the Training After Preprocessing Head:</h3>
+
+        <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>age</th>
+      <th>trestbps</th>
+      <th>chol</th>
+      <th>thalach</th>
+      <th>oldpeak</th>
+      <th>sex</th>
+      <th>fbs</th>
+      <th>exang</th>
+      <th>cp</th>
+      <th>restecg</th>
+      <th>slope</th>
+      <th>ca</th>
+      <th>thal</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>-0.682633</td>
+      <td>-0.407332</td>
+      <td>0.551722</td>
+      <td>0.719308</td>
+      <td>-0.451326</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>0.403989</td>
+      <td>-0.159592</td>
+      <td>0.247176</td>
+      <td>-0.843215</td>
+      <td>1.824189</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>-1.008619</td>
+      <td>-0.035722</td>
+      <td>-0.260402</td>
+      <td>1.109939</td>
+      <td>-0.360306</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>-1.117282</td>
+      <td>-0.655072</td>
+      <td>-0.544646</td>
+      <td>0.892922</td>
+      <td>-0.906429</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>0.838637</td>
+      <td>1.202978</td>
+      <td>-0.057371</td>
+      <td>0.198467</td>
+      <td>0.367859</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table><h3>First 5 rows of the Validation After Preprocessing Head:</h3>
+
+        <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>age</th>
+      <th>trestbps</th>
+      <th>chol</th>
+      <th>thalach</th>
+      <th>oldpeak</th>
+      <th>sex</th>
+      <th>fbs</th>
+      <th>exang</th>
+      <th>cp</th>
+      <th>restecg</th>
+      <th>slope</th>
+      <th>ca</th>
+      <th>thal</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>-1.117282</td>
+      <td>-0.035722</td>
+      <td>-0.564949</td>
+      <td>1.674184</td>
+      <td>-0.906429</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>0.838637</td>
+      <td>-0.035722</td>
+      <td>0.328388</td>
+      <td>-2.275528</td>
+      <td>0.185818</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>0.403989</td>
+      <td>2.441677</td>
+      <td>-0.443130</td>
+      <td>-0.148760</td>
+      <td>1.642148</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>0.947300</td>
+      <td>0.893303</td>
+      <td>-0.280705</td>
+      <td>0.024853</td>
+      <td>1.187045</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>-0.139322</td>
+      <td>-0.035722</td>
+      <td>-1.011617</td>
+      <td>0.111660</td>
+      <td>0.185818</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div>
+
+        </body>
+        </html>
+        
