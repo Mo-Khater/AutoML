@@ -5,15 +5,78 @@
   "data_descriptor": "",
   "supported_models": [
     "adaboost",
+    "bernoulli_nb",
+    "decision_tree",
     "extra_trees",
     "gaussian_nb",
-    "hist_gradient_boosting",
+    "gradient_boosting",
     "knn",
     "lda",
+    "liblinear_svc",
+    "mlp",
+    "passive_aggressive",
+    "qda",
     "random_forest",
+    "sgd",
     "svc"
   ],
   "datasets": [
+    {
+      "dataset_id": "2dplanes",
+      "metafeatures": {
+        "ClassEntropy": 0.9999998366087277,
+        "ClassProbabilityMax": 0.5002379644883763,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.4997620355116236,
+        "ClassProbabilitySTD": 0.00023796448837634654,
+        "DatasetRatio": 0.0003660992128866923,
+        "InverseDatasetRatio": 2731.5,
+        "KurtosisMax": -1.48943030834198,
+        "KurtosisMean": -1.551686882268986,
+        "KurtosisMin": -1.999910593032837,
+        "KurtosisSTD": 0.14956954983365164,
+        "LogDatasetRatio": -7.912606187835772,
+        "LogInverseDatasetRatio": 7.912606187835772,
+        "LogNumberOfFeatures": 2.302585092994046,
+        "LogNumberOfInstances": 10.215191280829819,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 10.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 27315.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 10.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.012265032157301903,
+        "SkewnessMean": -0.00150359716208186,
+        "SkewnessMin": -0.014613804407417774,
+        "SkewnessSTD": 0.007474952587141453,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "44",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 37,
+            "alpha": 4.8685589281759286e-05,
+            "learning_rate_init": 0.0025900103657085158,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.06892573900504695
+        }
+      ]
+    },
     {
       "dataset_id": "ailerons",
       "metafeatures": {
@@ -64,6 +127,66 @@
             "learning_rate": 0.02607458507935197
           },
           "score": 0.09399133546807303
+        }
+      ]
+    },
+    {
+      "dataset_id": "analcatdata_supreme",
+      "metafeatures": {
+        "ClassEntropy": 0.7891105695306428,
+        "ClassProbabilityMax": 0.7635359116022099,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.23646408839779007,
+        "ClassProbabilitySTD": 0.2635359116022099,
+        "DatasetRatio": 0.002578268876611418,
+        "InverseDatasetRatio": 387.85714285714283,
+        "KurtosisMax": 73.55531311035156,
+        "KurtosisMean": 16.68637976553081,
+        "KurtosisMin": -1.9872567653656006,
+        "KurtosisSTD": 27.129879511602553,
+        "LogDatasetRatio": -5.960637083312722,
+        "LogInverseDatasetRatio": 5.960637083312722,
+        "LogNumberOfFeatures": 1.9459101490553132,
+        "LogNumberOfInstances": 7.906547232368036,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 7.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 2715.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 7.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 7.902724266052246,
+        "SkewnessMean": 2.757092284304755,
+        "SkewnessMin": -0.14112046360969543,
+        "SkewnessSTD": 3.015080573813984,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "266",
+          "model_name": "random_forest",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 20,
+            "min_samples_leaf": 2,
+            "criterion": "gini",
+            "max_features": "sqrt",
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.006413418845584551
         }
       ]
     },
@@ -119,9 +242,117 @@
             "min_samples_leaf": 1,
             "criterion": "gini",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.4782608695652174
+        }
+      ]
+    },
+    {
+      "dataset_id": "arsenic-female-lung",
+      "metafeatures": {
+        "ClassEntropy": 0.1773894531859974,
+        "ClassProbabilityMax": 0.9733333333333334,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.02666666666666667,
+        "ClassProbabilitySTD": 0.47333333333333333,
+        "DatasetRatio": 0.010666666666666666,
+        "InverseDatasetRatio": 93.75,
+        "KurtosisMax": 110.67007695834519,
+        "KurtosisMean": 40.02884425976127,
+        "KurtosisMin": -1.2188394760817927,
+        "KurtosisSTD": 17.889312221411306,
+        "LogDatasetRatio": -4.54063166485052,
+        "LogInverseDatasetRatio": 4.54063166485052,
+        "LogNumberOfFeatures": 1.3862943611198906,
+        "LogNumberOfInstances": 5.926926025970411,
+        "NumberOfCategoricalFeatures": 1.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 4.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 375.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 3.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.3333333333333333,
+        "RatioNumericalToNominal": 3.0,
+        "SkewnessMax": 10.185897586256981,
+        "SkewnessMean": 6.258641420852728,
+        "SkewnessMin": 0.009162297125935918,
+        "SkewnessSTD": 1.6218732107584966,
+        "SymbolsMax": 43.0,
+        "SymbolsMean": 43.0,
+        "SymbolsMin": 43.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 43.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "154",
+          "model_name": "bernoulli_nb",
+          "params": {
+            "alpha": 0.39658291790906275,
+            "fit_prior": true
+          },
+          "score": 0.05882352941176472
+        }
+      ]
+    },
+    {
+      "dataset_id": "arsenic-male-bladder",
+      "metafeatures": {
+        "ClassEntropy": 0.2043246709802796,
+        "ClassProbabilityMax": 0.968,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.032,
+        "ClassProbabilitySTD": 0.46799999999999997,
+        "DatasetRatio": 0.010666666666666666,
+        "InverseDatasetRatio": 93.75,
+        "KurtosisMax": 110.66885474272247,
+        "KurtosisMean": 40.02881768985643,
+        "KurtosisMin": -1.2188394760817927,
+        "KurtosisSTD": 17.889207302875178,
+        "LogDatasetRatio": -4.54063166485052,
+        "LogInverseDatasetRatio": 4.54063166485052,
+        "LogNumberOfFeatures": 1.3862943611198906,
+        "LogNumberOfInstances": 5.926926025970411,
+        "NumberOfCategoricalFeatures": 1.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 4.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 375.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 3.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.3333333333333333,
+        "RatioNumericalToNominal": 3.0,
+        "SkewnessMax": 10.197522838356944,
+        "SkewnessMean": 6.258894143724465,
+        "SkewnessMin": 0.009162297125935918,
+        "SkewnessSTD": 1.6224859323848284,
+        "SymbolsMax": 43.0,
+        "SymbolsMean": 43.0,
+        "SymbolsMin": 43.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 43.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "293",
+          "model_name": "bernoulli_nb",
+          "params": {
+            "alpha": 0.8716056914531038,
+            "fit_prior": true
+          },
+          "score": 0.19999999999999996
         }
       ]
     },
@@ -229,9 +460,65 @@
             "min_samples_leaf": 6,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.11602209944751385
+        }
+      ]
+    },
+    {
+      "dataset_id": "bank32nh",
+      "metafeatures": {
+        "ClassEntropy": 0.9006826145372102,
+        "ClassProbabilityMax": 0.6833667334669339,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.3166332665330661,
+        "ClassProbabilitySTD": 0.18336673346693388,
+        "DatasetRatio": 0.005829841501184187,
+        "InverseDatasetRatio": 171.53125,
+        "KurtosisMax": 9.644611358642578,
+        "KurtosisMean": 0.9240010939611876,
+        "KurtosisMin": -1.3117843866348267,
+        "KurtosisSTD": 3.3256971177392383,
+        "LogDatasetRatio": -5.1447654657501625,
+        "LogInverseDatasetRatio": 5.1447654657501625,
+        "LogNumberOfFeatures": 3.4657359027997265,
+        "LogNumberOfInstances": 8.610501368549889,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 32.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 5489.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 32.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 2.2950119972229004,
+        "SkewnessMean": 0.6224293509967538,
+        "SkewnessMin": -0.024041127413511276,
+        "SkewnessSTD": 0.8910277524767247,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "384",
+          "model_name": "liblinear_svc",
+          "params": {
+            "C": 1.5978060177576863,
+            "loss": "squared_hinge",
+            "class_weight": "none"
+          },
+          "score": 0.28739316239316237
         }
       ]
     },
@@ -285,9 +572,66 @@
             "kernel": "poly",
             "gamma": 0.32003431657702625,
             "degree": 2,
-            "coef0": 0.07340987235571972
+            "coef0": 0.07340987235571972,
+            "class_weight": "none"
           },
           "score": 0.0670265407107512
+        }
+      ]
+    },
+    {
+      "dataset_id": "banknote-authentication",
+      "metafeatures": {
+        "ClassEntropy": 0.9900363545717286,
+        "ClassProbabilityMax": 0.558695652173913,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.44130434782608696,
+        "ClassProbabilitySTD": 0.05869565217391304,
+        "DatasetRatio": 0.004347826086956522,
+        "InverseDatasetRatio": 230.0,
+        "KurtosisMax": 1.5621490478515625,
+        "KurtosisMean": 0.2815343141555786,
+        "KurtosisMin": -0.7604365348815918,
+        "KurtosisSTD": 0.9020207625775767,
+        "LogDatasetRatio": -5.438079308923196,
+        "LogInverseDatasetRatio": 5.438079308923196,
+        "LogNumberOfFeatures": 1.3862943611198906,
+        "LogNumberOfInstances": 6.824373670043086,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 4.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 920.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 4.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 1.175997018814087,
+        "SkewnessMean": -0.12071622163057327,
+        "SkewnessMin": -1.0632234811782837,
+        "SkewnessSTD": 0.8176142576425832,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "188",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 0.0005005168300134541,
+            "learning_rate_init": 0.0012631168744483667,
+            "activation": "relu",
+            "solver": "adam"
+          },
+          "score": 0.0
         }
       ]
     },
@@ -343,9 +687,121 @@
             "min_samples_leaf": 1,
             "criterion": "gini",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.1872278664731496
+        }
+      ]
+    },
+    {
+      "dataset_id": "boston_corrected",
+      "metafeatures": {
+        "ClassEntropy": 0.9855748273706862,
+        "ClassProbabilityMax": 0.5705882352941176,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.4294117647058823,
+        "ClassProbabilitySTD": 0.07058823529411765,
+        "DatasetRatio": 0.058823529411764705,
+        "InverseDatasetRatio": 17.0,
+        "KurtosisMax": 80.01190476190476,
+        "KurtosisMean": 31.528891756729088,
+        "KurtosisMin": -1.2968537635135517,
+        "KurtosisSTD": 28.535277658603704,
+        "LogDatasetRatio": -2.833213344056216,
+        "LogInverseDatasetRatio": 2.833213344056216,
+        "LogNumberOfFeatures": 2.995732273553991,
+        "LogNumberOfInstances": 5.8289456176102075,
+        "NumberOfCategoricalFeatures": 3.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 20.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 340.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 17.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.17647058823529413,
+        "RatioNumericalToNominal": 5.666666666666667,
+        "SkewnessMax": 9.056042444793684,
+        "SkewnessMean": 4.585530850716138,
+        "SkewnessMin": -3.6409211624916202,
+        "SkewnessSTD": 3.4643952082780425,
+        "SymbolsMax": 83.0,
+        "SymbolsMean": 31.333333333333332,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 36.64544840616484,
+        "SymbolsSum": 94.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "407",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 162,
+            "alpha": 2.5550223982458062e-06,
+            "learning_rate_init": 0.00027271287919467994,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.08974358974358976
+        }
+      ]
+    },
+    {
+      "dataset_id": "breast-w",
+      "metafeatures": {
+        "ClassEntropy": 0.9018596777332487,
+        "ClassProbabilityMax": 0.6823027718550106,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.31769722814498935,
+        "ClassProbabilitySTD": 0.18230277185501065,
+        "DatasetRatio": 0.019189765458422176,
+        "InverseDatasetRatio": 52.111111111111114,
+        "KurtosisMax": 15.228355673355477,
+        "KurtosisMean": 2.3933746380103145,
+        "KurtosisMin": -0.5234739780426025,
+        "KurtosisSTD": 4.658643796764867,
+        "LogDatasetRatio": -3.95337819111006,
+        "LogInverseDatasetRatio": 3.95337819111006,
+        "LogNumberOfFeatures": 2.1972245773362196,
+        "LogNumberOfInstances": 6.150602768446279,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 9.0,
+        "NumberOfFeaturesWithMissingValues": 1.0,
+        "NumberOfInstances": 469.0,
+        "NumberOfInstancesWithMissingValues": 13.0,
+        "NumberOfMissingValues": 13.0,
+        "NumberOfNumericFeatures": 9.0,
+        "PercentageOfFeaturesWithMissingValues": 0.1111111111111111,
+        "PercentageOfInstancesWithMissingValues": 0.02771855010660981,
+        "PercentageOfMissingValues": 0.003079838900734423,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 3.8481247425079346,
+        "SkewnessMean": 1.6418234639697604,
+        "SkewnessMin": 0.6796358823776245,
+        "SkewnessSTD": 0.8539777970841981,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "467",
+          "model_name": "passive_aggressive",
+          "params": {
+            "C": 0.14268277711454813,
+            "loss": "hinge",
+            "average": false
+          },
+          "score": 0.04210526315789476
         }
       ]
     },
@@ -401,9 +857,119 @@
             "min_samples_leaf": 12,
             "criterion": "gini",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.14018691588785037
+        }
+      ]
+    },
+    {
+      "dataset_id": "climate-model-simulation-crashes",
+      "metafeatures": {
+        "ClassEntropy": 0.43109911719061084,
+        "ClassProbabilityMax": 0.9116022099447514,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.08839779005524862,
+        "ClassProbabilitySTD": 0.4116022099447514,
+        "DatasetRatio": 0.049723756906077346,
+        "InverseDatasetRatio": 20.11111111111111,
+        "KurtosisMax": -1.1237452030181885,
+        "KurtosisMean": -1.1935852368672688,
+        "KurtosisMin": -1.24972403049469,
+        "KurtosisSTD": 0.040819007767498805,
+        "LogDatasetRatio": -3.0012724539296065,
+        "LogInverseDatasetRatio": 3.0012724539296065,
+        "LogNumberOfFeatures": 2.8903717578961645,
+        "LogNumberOfInstances": 5.8916442118257715,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 18.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 362.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 18.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.05262163653969765,
+        "SkewnessMean": -0.003725925408717659,
+        "SkewnessMin": -0.07087760418653488,
+        "SkewnessSTD": 0.02984550717640424,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "648",
+          "model_name": "passive_aggressive",
+          "params": {
+            "C": 0.7778152070024655,
+            "loss": "hinge",
+            "average": true
+          },
+          "score": 0.01501501501501512
+        }
+      ]
+    },
+    {
+      "dataset_id": "colleges_aaup",
+      "metafeatures": {
+        "ClassEntropy": 0.898760171096384,
+        "ClassProbabilityMax": 0.6850899742930592,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.3149100257069409,
+        "ClassProbabilitySTD": 0.18508997429305915,
+        "DatasetRatio": 0.019280205655526992,
+        "InverseDatasetRatio": 51.86666666666667,
+        "KurtosisMax": 773.0012870012872,
+        "KurtosisMean": 45.78586429840345,
+        "KurtosisMin": -1.9923459929021663,
+        "KurtosisSTD": 104.32889991651153,
+        "LogDatasetRatio": -3.9486763230761817,
+        "LogInverseDatasetRatio": 3.9486763230761817,
+        "LogNumberOfFeatures": 2.70805020110221,
+        "LogNumberOfInstances": 6.656726524178391,
+        "NumberOfCategoricalFeatures": 2.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 15.0,
+        "NumberOfFeaturesWithMissingValues": 6.0,
+        "NumberOfInstances": 778.0,
+        "NumberOfInstancesWithMissingValues": 58.0,
+        "NumberOfMissingValues": 178.0,
+        "NumberOfNumericFeatures": 13.0,
+        "PercentageOfFeaturesWithMissingValues": 0.4,
+        "PercentageOfInstancesWithMissingValues": 0.07455012853470437,
+        "PercentageOfMissingValues": 0.015252784918594687,
+        "RatioNominalToNumerical": 0.15384615384615385,
+        "RatioNumericalToNominal": 6.5,
+        "SkewnessMax": 27.838844929365994,
+        "SkewnessMean": 5.3707361972323495,
+        "SkewnessMin": -0.08748718247739844,
+        "SkewnessSTD": 4.244931202097828,
+        "SymbolsMax": 51.0,
+        "SymbolsMean": 27.5,
+        "SymbolsMin": 4.0,
+        "SymbolsSTD": 23.5,
+        "SymbolsSum": 55.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "701",
+          "model_name": "liblinear_svc",
+          "params": {
+            "C": 17045.7732372673,
+            "loss": "squared_hinge",
+            "class_weight": "none"
+          },
+          "score": 0.009615384615384692
         }
       ]
     },
@@ -458,7 +1024,9 @@
             "min_samples_split": 7,
             "min_samples_leaf": 1,
             "criterion": "entropy",
-            "max_features": "sqrt"
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.24942791762013738
         }
@@ -508,13 +1076,13 @@
       "candidates": [
         {
           "source_algorithm_id": "657",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.04202246787451397,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 14,
-            "l2_regularization": 2.0357979007621058e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 31
           },
           "score": 0.04214963119072712
         }
@@ -564,13 +1132,13 @@
       "candidates": [
         {
           "source_algorithm_id": "206",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.010827728124541558,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 4,
-            "l2_regularization": 1.7108930238344161e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 25
           },
           "score": 0.04969760715224825
         }
@@ -628,7 +1196,9 @@
             "min_samples_leaf": 1,
             "criterion": "gini",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.11304347826086958
         }
@@ -686,9 +1256,125 @@
             "min_samples_leaf": 5,
             "criterion": "entropy",
             "max_features": "log2",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.0631045601105481
+        }
+      ]
+    },
+    {
+      "dataset_id": "delta_elevators",
+      "metafeatures": {
+        "ClassEntropy": 0.9999991308236985,
+        "ClassProbabilityMax": 0.5005488474204172,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.4994511525795829,
+        "ClassProbabilitySTD": 0.0005488474204171367,
+        "DatasetRatio": 0.0009408812921436412,
+        "InverseDatasetRatio": 1062.8333333333333,
+        "KurtosisMax": 3.9213500022888184,
+        "KurtosisMean": 0.5684107765698683,
+        "KurtosisMin": -0.5238511562347412,
+        "KurtosisSTD": 1.5399688040228623,
+        "LogDatasetRatio": -6.968693577087216,
+        "LogInverseDatasetRatio": 6.968693577087216,
+        "LogNumberOfFeatures": 1.791759469228055,
+        "LogNumberOfInstances": 8.760453046315272,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 6.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 6377.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 6.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.16351966559886932,
+        "SkewnessMean": -0.006105443462729454,
+        "SkewnessMin": -0.21255609393119812,
+        "SkewnessSTD": 0.12639867189774245,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "283",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 136,
+            "alpha": 0.05476322473700896,
+            "learning_rate_init": 0.012698439797907473,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.1128428927680798
+        }
+      ]
+    },
+    {
+      "dataset_id": "diabetes",
+      "metafeatures": {
+        "ClassEntropy": 0.9264812028795422,
+        "ClassProbabilityMax": 0.658252427184466,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.341747572815534,
+        "ClassProbabilitySTD": 0.158252427184466,
+        "DatasetRatio": 0.015533980582524271,
+        "InverseDatasetRatio": 64.375,
+        "KurtosisMax": 8.65097427368164,
+        "KurtosisMean": 2.8869645595550537,
+        "KurtosisMin": -0.27129554748535156,
+        "KurtosisSTD": 3.0322287858651737,
+        "LogDatasetRatio": -4.1647253589839,
+        "LogInverseDatasetRatio": 4.1647253589839,
+        "LogNumberOfFeatures": 2.0794415416798357,
+        "LogNumberOfInstances": 6.244166900663736,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 8.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 515.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 8.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 2.4669785499572754,
+        "SkewnessMean": 0.5686217378824949,
+        "SkewnessMin": -1.906277060508728,
+        "SkewnessSTD": 1.2758883457605104,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "489",
+          "model_name": "sgd",
+          "params": {
+            "loss": "hinge",
+            "penalty": "l2",
+            "alpha": 0.0016300586028238039,
+            "learning_rate": "optimal",
+            "eta0": 0.01,
+            "average": true,
+            "class_weight": "none"
+          },
+          "score": 0.295774647887324
         }
       ]
     },
@@ -792,8 +1478,10 @@
           "model_name": "knn",
           "params": {
             "n_neighbors": 4,
+            "weights": "distance",
             "p": 2,
-            "weights": "distance"
+            "algorithm": "auto",
+            "leaf_size": 55
           },
           "score": 0.02157303370786512
         }
@@ -843,15 +1531,125 @@
       "candidates": [
         {
           "source_algorithm_id": "524",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.3500835102340142,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 1,
-            "l2_regularization": 1.4326355176911239e-09
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 206
           },
           "score": 0.04104303086997185
+        }
+      ]
+    },
+    {
+      "dataset_id": "elevators",
+      "metafeatures": {
+        "ClassEntropy": 0.8887852646700093,
+        "ClassProbabilityMax": 0.6937601150872146,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.3062398849127855,
+        "ClassProbabilitySTD": 0.19376011508721455,
+        "DatasetRatio": 0.0016184139543247618,
+        "InverseDatasetRatio": 617.8888888888889,
+        "KurtosisMax": 7558.090106400047,
+        "KurtosisMean": 842.5761529717279,
+        "KurtosisMin": -0.5841033458709717,
+        "KurtosisSTD": 2374.2961590727805,
+        "LogDatasetRatio": -6.426308649851345,
+        "LogInverseDatasetRatio": 6.426308649851345,
+        "LogNumberOfFeatures": 2.8903717578961645,
+        "LogNumberOfInstances": 9.316680407747508,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 18.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 11122.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 18.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 84.87684631347656,
+        "SkewnessMean": 8.912231362942192,
+        "SkewnessMin": -1.492260217666626,
+        "SkewnessSTD": 26.866751869973488,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "114",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 147,
+            "alpha": 0.010532545646916008,
+            "learning_rate_init": 0.0003663690531776363,
+            "activation": "relu",
+            "solver": "adam"
+          },
+          "score": 0.162170542635659
+        }
+      ]
+    },
+    {
+      "dataset_id": "fri_c0_1000_5",
+      "metafeatures": {
+        "ClassEntropy": 0.999974289086901,
+        "ClassProbabilityMax": 0.5029850746268657,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.49701492537313435,
+        "ClassProbabilitySTD": 0.0029850746268656747,
+        "DatasetRatio": 0.007462686567164179,
+        "InverseDatasetRatio": 134.0,
+        "KurtosisMax": -1.0956037044525146,
+        "KurtosisMean": -1.1721227645874024,
+        "KurtosisMin": -1.2168445587158203,
+        "KurtosisSTD": 0.04338271047680619,
+        "LogDatasetRatio": -4.897839799950911,
+        "LogInverseDatasetRatio": 4.897839799950911,
+        "LogNumberOfFeatures": 1.6094379124341003,
+        "LogNumberOfInstances": 6.507277712385012,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 5.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 670.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 5.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.09161170572042465,
+        "SkewnessMean": 0.031943710148334505,
+        "SkewnessMin": -0.07096868753433228,
+        "SkewnessSTD": 0.05480435909807107,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "590",
+          "model_name": "passive_aggressive",
+          "params": {
+            "C": 0.14833233294431605,
+            "loss": "squared_hinge",
+            "average": true
+          },
+          "score": 0.06501547987616108
         }
       ]
     },
@@ -905,7 +1703,8 @@
             "kernel": "rbf",
             "gamma": 0.015219182148092949,
             "degree": 3,
-            "coef0": 0.0
+            "coef0": 0.0,
+            "class_weight": "none"
           },
           "score": 0.06818181818181823
         }
@@ -963,7 +1762,9 @@
             "min_samples_leaf": 2,
             "criterion": "gini",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.06017191977077374
         }
@@ -1013,13 +1814,13 @@
       "candidates": [
         {
           "source_algorithm_id": "332",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.060800813211425456,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 5,
-            "l2_regularization": 0.005326508887463406
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 6
           },
           "score": 0.04986876640419957
         }
@@ -1077,9 +1878,70 @@
             "min_samples_leaf": 2,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.03626943005181338
+        }
+      ]
+    },
+    {
+      "dataset_id": "fri_c3_1000_10",
+      "metafeatures": {
+        "ClassEntropy": 0.9851395079821781,
+        "ClassProbabilityMax": 0.5716417910447761,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.42835820895522386,
+        "ClassProbabilitySTD": 0.07164179104477611,
+        "DatasetRatio": 0.014925373134328358,
+        "InverseDatasetRatio": 67.0,
+        "KurtosisMax": 1.6775541305541992,
+        "KurtosisMean": -0.7342751741409301,
+        "KurtosisMin": -1.2569396495819092,
+        "KurtosisSTD": 0.8943733518868652,
+        "LogDatasetRatio": -4.204692619390966,
+        "LogInverseDatasetRatio": 4.204692619390966,
+        "LogNumberOfFeatures": 2.302585092994046,
+        "LogNumberOfInstances": 6.507277712385012,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 10.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 670.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 10.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 1.3750905990600586,
+        "SkewnessMean": 0.21886726107914,
+        "SkewnessMin": -0.0664718747138977,
+        "SkewnessSTD": 0.44570157546528977,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "257",
+          "model_name": "extra_trees",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 20,
+            "min_samples_leaf": 2,
+            "criterion": "entropy",
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.06857142857142862
         }
       ]
     },
@@ -1127,13 +1989,13 @@
       "candidates": [
         {
           "source_algorithm_id": "61",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.08291320147381159,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 20,
-            "l2_regularization": 1.0647401999412075e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 39
           },
           "score": 0.0603674540682414
         }
@@ -1191,9 +2053,70 @@
             "min_samples_leaf": 1,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.08571428571428574
+        }
+      ]
+    },
+    {
+      "dataset_id": "fri_c3_500_50",
+      "metafeatures": {
+        "ClassEntropy": 0.9869444983748495,
+        "ClassProbabilityMax": 0.5671641791044776,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.43283582089552236,
+        "ClassProbabilitySTD": 0.06716417910447761,
+        "DatasetRatio": 0.14925373134328357,
+        "InverseDatasetRatio": 6.7,
+        "KurtosisMax": 3.8343453407287598,
+        "KurtosisMean": -1.04885286025422,
+        "KurtosisMin": -1.3209953308105469,
+        "KurtosisSTD": 0.767929489319798,
+        "LogDatasetRatio": -1.9021075263969205,
+        "LogInverseDatasetRatio": 1.9021075263969205,
+        "LogNumberOfFeatures": 3.912023005428146,
+        "LogNumberOfInstances": 5.814130531825066,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 50.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 335.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 50.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 1.8456681966781616,
+        "SkewnessMean": 0.09354961229139008,
+        "SkewnessMin": -0.16214130818843842,
+        "SkewnessSTD": 0.2964726276139587,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "32",
+          "model_name": "extra_trees",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 10,
+            "min_samples_leaf": 1,
+            "criterion": "gini",
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.08510638297872342
         }
       ]
     },
@@ -1241,15 +2164,130 @@
       "candidates": [
         {
           "source_algorithm_id": "546",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.09809681787962342,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 2,
-            "l2_regularization": 0.4635442279519353
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 328
           },
           "score": 0.07526881720430123
+        }
+      ]
+    },
+    {
+      "dataset_id": "fried",
+      "metafeatures": {
+        "ClassEntropy": 0.999997075391041,
+        "ClassProbabilityMax": 0.5010067728354384,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.49899322716456157,
+        "ClassProbabilitySTD": 0.001006772835438402,
+        "DatasetRatio": 0.0003660992128866923,
+        "InverseDatasetRatio": 2731.5,
+        "KurtosisMax": -1.1862576007843018,
+        "KurtosisMean": -1.1962614155363542,
+        "KurtosisMin": -1.2053626775741577,
+        "KurtosisSTD": 0.005961512128429533,
+        "LogDatasetRatio": -7.912606187835772,
+        "LogInverseDatasetRatio": 7.912606187835772,
+        "LogNumberOfFeatures": 2.302585092994046,
+        "LogNumberOfInstances": 10.215191280829819,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 10.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 27315.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 10.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.014674628153443336,
+        "SkewnessMean": 0.0023945856955833733,
+        "SkewnessMin": -0.011635380797088146,
+        "SkewnessSTD": 0.007010999089837362,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "338",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 108,
+            "alpha": 3.542372581884717e-07,
+            "learning_rate_init": 0.00016753718126302934,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.059005070174149465
+        }
+      ]
+    },
+    {
+      "dataset_id": "gametes_epistasis_2-way_1000atts_0.4h_edm-1_edm-1_1",
+      "metafeatures": {
+        "ClassEntropy": 0.9998769664968696,
+        "ClassProbabilityMax": 0.5065298507462687,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.49347014925373134,
+        "ClassProbabilitySTD": 0.006529850746268662,
+        "DatasetRatio": 0.9328358208955224,
+        "InverseDatasetRatio": 1.072,
+        "KurtosisMax": 1067.0009337068168,
+        "KurtosisMean": 26.353566023611364,
+        "KurtosisMin": -2.0,
+        "KurtosisSTD": 122.65211410747287,
+        "LogDatasetRatio": -0.06952606264861022,
+        "LogInverseDatasetRatio": 0.0695260626486103,
+        "LogNumberOfFeatures": 6.907755278982137,
+        "LogNumberOfInstances": 6.977281341630747,
+        "NumberOfCategoricalFeatures": 1000.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 1000.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1072.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 32.69557972733957,
+        "SkewnessMean": 2.07271091474768,
+        "SkewnessMin": -8.000946913656628,
+        "SkewnessSTD": 4.904837967506898,
+        "SymbolsMax": 3.0,
+        "SymbolsMean": 2.964,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.18629009635512025,
+        "SymbolsSum": 2964.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "688",
+          "model_name": "extra_trees",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 9,
+            "min_samples_leaf": 6,
+            "criterion": "gini",
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.27069351230425054
         }
       ]
     },
@@ -1303,6 +2341,122 @@
             "learning_rate": 0.13117577344801604
           },
           "score": 0.29957805907172996
+        }
+      ]
+    },
+    {
+      "dataset_id": "gametes_epistasis_2-way_20atts_0.4h_edm-1_1",
+      "metafeatures": {
+        "ClassEntropy": 0.9998769664968696,
+        "ClassProbabilityMax": 0.5065298507462687,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.49347014925373134,
+        "ClassProbabilitySTD": 0.006529850746268662,
+        "DatasetRatio": 0.018656716417910446,
+        "InverseDatasetRatio": 53.6,
+        "KurtosisMax": 531.0018691588784,
+        "KurtosisMean": 17.009715222775675,
+        "KurtosisMin": -1.9999860770288382,
+        "KurtosisSTD": 70.88831846884824,
+        "LogDatasetRatio": -3.9815490680767565,
+        "LogInverseDatasetRatio": 3.9815490680767565,
+        "LogNumberOfFeatures": 2.995732273553991,
+        "LogNumberOfInstances": 6.977281341630747,
+        "NumberOfCategoricalFeatures": 20.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 20.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1072.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 23.08683324232403,
+        "SkewnessMean": 1.6701518171553784,
+        "SkewnessMin": -6.763743424186429,
+        "SkewnessSTD": 4.02744436714255,
+        "SymbolsMax": 3.0,
+        "SymbolsMean": 2.9,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.3,
+        "SymbolsSum": 58.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "473",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 250,
+            "alpha": 0.002056643883103885,
+            "learning_rate_init": 0.000772935485415985,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.26131386861313866
+        }
+      ]
+    },
+    {
+      "dataset_id": "gametes_epistasis_3-way_20atts_0.2h_edm-1_1",
+      "metafeatures": {
+        "ClassEntropy": 0.9998769664968696,
+        "ClassProbabilityMax": 0.5065298507462687,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.49347014925373134,
+        "ClassProbabilitySTD": 0.006529850746268662,
+        "DatasetRatio": 0.018656716417910446,
+        "InverseDatasetRatio": 53.6,
+        "KurtosisMax": 352.3361396944182,
+        "KurtosisMean": 19.320713899060973,
+        "KurtosisMin": -1.9999443075337984,
+        "KurtosisSTD": 60.837303479854974,
+        "LogDatasetRatio": -3.9815490680767565,
+        "LogInverseDatasetRatio": 3.9815490680767565,
+        "LogNumberOfFeatures": 2.995732273553991,
+        "LogNumberOfInstances": 6.977281341630747,
+        "NumberOfCategoricalFeatures": 20.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 20.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1072.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 18.823818414296763,
+        "SkewnessMean": 2.158107286044986,
+        "SkewnessMin": -2.796941304074187,
+        "SkewnessSTD": 4.082068941233172,
+        "SymbolsMax": 3.0,
+        "SymbolsMean": 3.0,
+        "SymbolsMin": 3.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 60.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "585",
+          "model_name": "random_forest",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 8,
+            "min_samples_leaf": 7,
+            "criterion": "entropy",
+            "max_features": "sqrt",
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.34251968503937
         }
       ]
     },
@@ -1403,13 +2557,13 @@
       "candidates": [
         {
           "source_algorithm_id": "211",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.051072202871981255,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 100,
-            "l2_regularization": 0.0015246021799433245
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 377
           },
           "score": 0.26335877862595414
         }
@@ -1462,8 +2616,10 @@
           "model_name": "knn",
           "params": {
             "n_neighbors": 1,
+            "weights": "uniform",
             "p": 1,
-            "weights": "uniform"
+            "algorithm": "auto",
+            "leaf_size": 55
           },
           "score": 0.0
         }
@@ -1521,7 +2677,9 @@
             "min_samples_leaf": 5,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.6533333333333333
         }
@@ -1571,15 +2729,128 @@
       "candidates": [
         {
           "source_algorithm_id": "260",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.03055499033114984,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 20,
-            "l2_regularization": 7.154474114149067e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 32
           },
           "score": 0.18521758145637446
+        }
+      ]
+    },
+    {
+      "dataset_id": "houses",
+      "metafeatures": {
+        "ClassEntropy": 0.9850863080376989,
+        "ClassProbabilityMax": 0.5717694699544436,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.42823053004555645,
+        "ClassProbabilitySTD": 0.07176946995444355,
+        "DatasetRatio": 0.0005784944681466483,
+        "InverseDatasetRatio": 1728.625,
+        "KurtosisMax": 77.26595306396484,
+        "KurtosisMean": 18.046093487516313,
+        "KurtosisMin": -1.0943617820739746,
+        "KurtosisSTD": 24.42678352398469,
+        "LogDatasetRatio": -7.455081573784822,
+        "LogInverseDatasetRatio": 7.455081573784822,
+        "LogNumberOfFeatures": 2.0794415416798357,
+        "LogNumberOfInstances": 9.534523115464658,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 8.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 13829.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 8.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 4.890029430389404,
+        "SkewnessMean": 2.295657095964998,
+        "SkewnessMin": 0.06147242709994316,
+        "SkewnessSTD": 1.626510308657282,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "518",
+          "model_name": "extra_trees",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 6,
+            "min_samples_leaf": 2,
+            "criterion": "entropy",
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.01323895661292429
+        }
+      ]
+    },
+    {
+      "dataset_id": "ilpd",
+      "metafeatures": {
+        "ClassEntropy": 0.8707280156950615,
+        "ClassProbabilityMax": 0.7084398976982097,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.2915601023017903,
+        "ClassProbabilitySTD": 0.2084398976982097,
+        "DatasetRatio": 0.02557544757033248,
+        "InverseDatasetRatio": 39.1,
+        "KurtosisMax": 79.2714290578632,
+        "KurtosisMean": 19.971648360959406,
+        "KurtosisMin": -0.7114639546146417,
+        "KurtosisSTD": 28.433718388278763,
+        "LogDatasetRatio": -3.66612246699132,
+        "LogInverseDatasetRatio": 3.66612246699132,
+        "LogNumberOfFeatures": 2.302585092994046,
+        "LogNumberOfInstances": 5.968707559985366,
+        "NumberOfCategoricalFeatures": 1.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 10.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 391.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 9.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.1111111111111111,
+        "RatioNumericalToNominal": 9.0,
+        "SkewnessMax": 7.435805761739429,
+        "SkewnessMean": 2.4900046122531165,
+        "SkewnessMin": -1.1351370161286074,
+        "SkewnessSTD": 2.9506224290183765,
+        "SymbolsMax": 2.0,
+        "SymbolsMean": 2.0,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 2.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "630",
+          "model_name": "liblinear_svc",
+          "params": {
+            "C": 9.643212480972293,
+            "loss": "squared_hinge",
+            "class_weight": "none"
+          },
+          "score": 0.4125
         }
       ]
     },
@@ -1635,9 +2906,67 @@
             "min_samples_leaf": 1,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.011702127659574457
+        }
+      ]
+    },
+    {
+      "dataset_id": "irish",
+      "metafeatures": {
+        "ClassEntropy": 0.9921116920021501,
+        "ClassProbabilityMax": 0.5522388059701493,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.44776119402985076,
+        "ClassProbabilitySTD": 0.052238805970149266,
+        "DatasetRatio": 0.014925373134328358,
+        "InverseDatasetRatio": 67.0,
+        "KurtosisMax": 78.76208459214497,
+        "KurtosisMean": 13.821792149412154,
+        "KurtosisMin": -1.991964285714286,
+        "KurtosisSTD": 23.148559830853692,
+        "LogDatasetRatio": -4.204692619390966,
+        "LogInverseDatasetRatio": 4.204692619390966,
+        "LogNumberOfFeatures": 1.6094379124341003,
+        "LogNumberOfInstances": 5.814130531825066,
+        "NumberOfCategoricalFeatures": 3.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 5.0,
+        "NumberOfFeaturesWithMissingValues": 2.0,
+        "NumberOfInstances": 335.0,
+        "NumberOfInstancesWithMissingValues": 26.0,
+        "NumberOfMissingValues": 26.0,
+        "NumberOfNumericFeatures": 2.0,
+        "PercentageOfFeaturesWithMissingValues": 0.4,
+        "PercentageOfInstancesWithMissingValues": 0.07761194029850746,
+        "PercentageOfMissingValues": 0.015522388059701492,
+        "RatioNominalToNumerical": 1.5,
+        "RatioNumericalToNominal": 0.6666666666666666,
+        "SkewnessMax": 8.98677275734426,
+        "SkewnessMean": 2.815266706319214,
+        "SkewnessMin": -0.6324121369441642,
+        "SkewnessSTD": 2.7799859077902194,
+        "SymbolsMax": 10.0,
+        "SymbolsMean": 5.0,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 3.559026084010437,
+        "SymbolsSum": 15.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "147",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 0.00021148999718383549,
+            "learning_rate_init": 0.0007452270241186694,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.0
         }
       ]
     },
@@ -1693,7 +3022,9 @@
             "min_samples_leaf": 20,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.5371428571428571
         }
@@ -1749,7 +3080,8 @@
             "kernel": "rbf",
             "gamma": 0.1004517427683763,
             "degree": 3,
-            "coef0": 0.0
+            "coef0": 0.0,
+            "class_weight": "none"
           },
           "score": 0.4042553191489362
         }
@@ -1860,9 +3192,70 @@
             "min_samples_leaf": 1,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.03951367781155013
+        }
+      ]
+    },
+    {
+      "dataset_id": "kdd_internet_usage",
+      "metafeatures": {
+        "ClassEntropy": 0.8423720539215215,
+        "ClassProbabilityMax": 0.7293666026871402,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.2706333973128599,
+        "ClassProbabilitySTD": 0.22936660268714013,
+        "DatasetRatio": 0.010039864166543629,
+        "InverseDatasetRatio": 99.6029411764706,
+        "KurtosisMax": 333.65296164667546,
+        "KurtosisMean": 27.40749944308645,
+        "KurtosisMin": -1.9937741909565991,
+        "KurtosisSTD": 39.551284730082855,
+        "LogDatasetRatio": -4.601191694038797,
+        "LogInverseDatasetRatio": 4.601191694038797,
+        "LogNumberOfFeatures": 4.219507705176107,
+        "LogNumberOfInstances": 8.820699399214904,
+        "NumberOfCategoricalFeatures": 68.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 68.0,
+        "NumberOfFeaturesWithMissingValues": 1.0,
+        "NumberOfInstances": 6773.0,
+        "NumberOfInstancesWithMissingValues": 1783.0,
+        "NumberOfMissingValues": 1783.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.014705882352941176,
+        "PercentageOfInstancesWithMissingValues": 0.26325114424922486,
+        "PercentageOfMissingValues": 0.003871340356606248,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 18.320834087089906,
+        "SkewnessMean": 3.2855598708184726,
+        "SkewnessMin": -13.802879414600222,
+        "SkewnessSTD": 4.314231771515498,
+        "SymbolsMax": 117.0,
+        "SymbolsMean": 7.955882352941177,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 20.24296088515521,
+        "SymbolsSum": 541.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "573",
+          "model_name": "extra_trees",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 17,
+            "min_samples_leaf": 8,
+            "criterion": "gini",
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.19073869900771778
         }
       ]
     },
@@ -1910,15 +3303,71 @@
       "candidates": [
         {
           "source_algorithm_id": "84",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.10966957560713958,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 37,
-            "l2_regularization": 1e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 50
           },
           "score": 0.6025199096636158
+        }
+      ]
+    },
+    {
+      "dataset_id": "kin8nm",
+      "metafeatures": {
+        "ClassEntropy": 0.9997839138279425,
+        "ClassProbabilityMax": 0.5086536709783203,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.49134632902167974,
+        "ClassProbabilitySTD": 0.00865367097832026,
+        "DatasetRatio": 0.0014574603752960467,
+        "InverseDatasetRatio": 686.125,
+        "KurtosisMax": -1.1748900413513184,
+        "KurtosisMean": -1.1909352093935013,
+        "KurtosisMin": -1.2142480611801147,
+        "KurtosisSTD": 0.011712181136059936,
+        "LogDatasetRatio": -6.531059826870053,
+        "LogInverseDatasetRatio": 6.531059826870053,
+        "LogNumberOfFeatures": 2.0794415416798357,
+        "LogNumberOfInstances": 8.610501368549889,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 8.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 5489.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 8.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.008714775554835796,
+        "SkewnessMean": -0.007085326171363704,
+        "SkewnessMin": -0.040518611669540405,
+        "SkewnessSTD": 0.014164865996545201,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "578",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 9.321704997999201e-06,
+            "learning_rate_init": 0.0001013228819232352,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.0864661654135338
         }
       ]
     },
@@ -1969,8 +3418,10 @@
           "model_name": "knn",
           "params": {
             "n_neighbors": 6,
+            "weights": "distance",
             "p": 1,
-            "weights": "distance"
+            "algorithm": "auto",
+            "leaf_size": 55
           },
           "score": 0.0808753568030447
         }
@@ -2028,7 +3479,9 @@
             "min_samples_leaf": 1,
             "criterion": "gini",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.10138248847926268
         }
@@ -2078,15 +3531,71 @@
       "candidates": [
         {
           "source_algorithm_id": "425",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.05229948950187572,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 19,
-            "l2_regularization": 2.64886333109316e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 30
           },
           "score": 0.16463414634146334
+        }
+      ]
+    },
+    {
+      "dataset_id": "mammography",
+      "metafeatures": {
+        "ClassEntropy": 0.16060354638403487,
+        "ClassProbabilityMax": 0.97651141064994,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.023488589350060055,
+        "ClassProbabilitySTD": 0.47651141064993996,
+        "DatasetRatio": 0.0008007473642065928,
+        "InverseDatasetRatio": 1248.8333333333333,
+        "KurtosisMax": 183.43936289802218,
+        "KurtosisMean": 69.61919533702337,
+        "KurtosisMin": -1.8090657960254946,
+        "KurtosisSTD": 79.3142109367544,
+        "LogDatasetRatio": -7.1299650611362555,
+        "LogInverseDatasetRatio": 7.1299650611362555,
+        "LogNumberOfFeatures": 1.791759469228055,
+        "LogNumberOfInstances": 8.92172453036431,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 6.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 7493.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 6.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 9.735568046569824,
+        "SkewnessMean": 4.664804143210252,
+        "SkewnessMin": 0.18595828115940094,
+        "SkewnessSTD": 3.5547919875932346,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "235",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 34,
+            "alpha": 6.159649866840956e-07,
+            "learning_rate_init": 0.0025137772119535008,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.28104575163398693
         }
       ]
     },
@@ -2187,13 +3696,13 @@
       "candidates": [
         {
           "source_algorithm_id": "270",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.14515873247977112,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 1,
-            "l2_regularization": 5.759216242427118e-07
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 11
           },
           "score": 0.5
         }
@@ -2249,9 +3758,179 @@
             "kernel": "poly",
             "gamma": 0.006276539842771683,
             "degree": 2,
-            "coef0": -0.018575725453357728
+            "coef0": -0.018575725453357728,
+            "class_weight": "none"
           },
           "score": 0.0
+        }
+      ]
+    },
+    {
+      "dataset_id": "monks-problems-1",
+      "metafeatures": {
+        "ClassEntropy": 0.9998703776486075,
+        "ClassProbabilityMax": 0.5067024128686327,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.4932975871313673,
+        "ClassProbabilitySTD": 0.006702412868632712,
+        "DatasetRatio": 0.0160857908847185,
+        "InverseDatasetRatio": 62.166666666666664,
+        "KurtosisMax": -0.4956084823548035,
+        "KurtosisMean": -1.416050787180833,
+        "KurtosisMin": -1.9997412305922941,
+        "KurtosisSTD": 0.4788753120499273,
+        "LogDatasetRatio": -4.1298189504157605,
+        "LogInverseDatasetRatio": 4.1298189504157605,
+        "LogNumberOfFeatures": 1.791759469228055,
+        "LogNumberOfInstances": 5.921578419643816,
+        "NumberOfCategoricalFeatures": 6.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 6.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 373.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 1.2265363906730193,
+        "SkewnessMean": 0.6470025521551699,
+        "SkewnessMin": -0.03754012329575762,
+        "SkewnessSTD": 0.40661641669251813,
+        "SymbolsMax": 4.0,
+        "SymbolsMean": 2.8333333333333335,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.6871842709362768,
+        "SymbolsSum": 17.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "149",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 0.00021148999718383549,
+            "learning_rate_init": 0.0007452270241186694,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.0
+        }
+      ]
+    },
+    {
+      "dataset_id": "monks-problems-2",
+      "metafeatures": {
+        "ClassEntropy": 0.9149517230059262,
+        "ClassProbabilityMax": 0.6699751861042184,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.33002481389578164,
+        "ClassProbabilitySTD": 0.16997518610421836,
+        "DatasetRatio": 0.01488833746898263,
+        "InverseDatasetRatio": 67.16666666666667,
+        "KurtosisMax": -0.4085588377057068,
+        "KurtosisMean": -1.4141220833308878,
+        "KurtosisMin": -1.9987928061098794,
+        "KurtosisSTD": 0.4829218087331753,
+        "LogDatasetRatio": -4.207177092718628,
+        "LogInverseDatasetRatio": 4.207177092718628,
+        "LogNumberOfFeatures": 1.791759469228055,
+        "LogNumberOfInstances": 5.998936561946683,
+        "NumberOfCategoricalFeatures": 6.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 6.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 403.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 1.2615233498807277,
+        "SkewnessMean": 0.6472760202263635,
+        "SkewnessMin": -0.0645497224367901,
+        "SkewnessSTD": 0.4085482472230572,
+        "SymbolsMax": 4.0,
+        "SymbolsMean": 2.8333333333333335,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.6871842709362768,
+        "SymbolsSum": 17.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "91",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 4.2841884333778574e-06,
+            "learning_rate_init": 0.0011804284312897009,
+            "activation": "relu",
+            "solver": "adam"
+          },
+          "score": 0.0
+        }
+      ]
+    },
+    {
+      "dataset_id": "monks-problems-3",
+      "metafeatures": {
+        "ClassEntropy": 0.9996663646052281,
+        "ClassProbabilityMax": 0.510752688172043,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.489247311827957,
+        "ClassProbabilitySTD": 0.010752688172043001,
+        "DatasetRatio": 0.016129032258064516,
+        "InverseDatasetRatio": 62.0,
+        "KurtosisMax": -0.3273621643779463,
+        "KurtosisMean": -1.406610044806246,
+        "KurtosisMin": -1.9971074021578776,
+        "KurtosisSTD": 0.5045155687933729,
+        "LogDatasetRatio": -4.127134385045092,
+        "LogInverseDatasetRatio": 4.127134385045092,
+        "LogNumberOfFeatures": 1.791759469228055,
+        "LogNumberOfInstances": 5.918893854273146,
+        "NumberOfCategoricalFeatures": 6.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 6.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 372.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 1.2933050048701016,
+        "SkewnessMean": 0.6483391630494734,
+        "SkewnessMin": -0.12930163676704703,
+        "SkewnessSTD": 0.41598832297320876,
+        "SymbolsMax": 4.0,
+        "SymbolsMean": 2.8333333333333335,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.6871842709362768,
+        "SymbolsSum": 17.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "399",
+          "model_name": "decision_tree",
+          "params": {
+            "criterion": "gini",
+            "max_depth": 54,
+            "min_samples_split": 20,
+            "min_samples_leaf": 4,
+            "max_features": "sqrt",
+            "class_weight": "none"
+          },
+          "score": 0.004739336492890933
         }
       ]
     },
@@ -2305,7 +3984,8 @@
             "kernel": "rbf",
             "gamma": 1.8287341102334311,
             "degree": 3,
-            "coef0": 0.0
+            "coef0": 0.0,
+            "class_weight": "none"
           },
           "score": 0.0315820113520594
         }
@@ -2358,8 +4038,10 @@
           "model_name": "knn",
           "params": {
             "n_neighbors": 1,
+            "weights": "distance",
             "p": 2,
-            "weights": "distance"
+            "algorithm": "auto",
+            "leaf_size": 55
           },
           "score": 0.0
         }
@@ -2412,10 +4094,70 @@
           "model_name": "knn",
           "params": {
             "n_neighbors": 2,
+            "weights": "uniform",
             "p": 2,
-            "weights": "uniform"
+            "algorithm": "auto",
+            "leaf_size": 55
           },
           "score": 0.0
+        }
+      ]
+    },
+    {
+      "dataset_id": "mv",
+      "metafeatures": {
+        "ClassEntropy": 0.9722210269299298,
+        "ClassProbabilityMax": 0.5978034047226799,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.40219659527732016,
+        "ClassProbabilitySTD": 0.09780340472267987,
+        "DatasetRatio": 0.0003660992128866923,
+        "InverseDatasetRatio": 2731.5,
+        "KurtosisMax": 3.4816912977907375,
+        "KurtosisMean": -0.7592433649042233,
+        "KurtosisMin": -1.8227262816479857,
+        "KurtosisSTD": 1.2133897206146949,
+        "LogDatasetRatio": -7.912606187835772,
+        "LogInverseDatasetRatio": 7.912606187835772,
+        "LogNumberOfFeatures": 2.302585092994046,
+        "LogNumberOfInstances": 10.215191280829819,
+        "NumberOfCategoricalFeatures": 3.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 10.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 27315.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 7.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.42857142857142855,
+        "RatioNumericalToNominal": 2.3333333333333335,
+        "SkewnessMax": 2.341301197580255,
+        "SkewnessMean": 0.2527841534386107,
+        "SkewnessMin": -1.1503665614454281,
+        "SkewnessSTD": 0.8889507382299725,
+        "SymbolsMax": 3.0,
+        "SymbolsMean": 2.3333333333333335,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.4714045207910317,
+        "SymbolsSum": 7.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "605",
+          "model_name": "sgd",
+          "params": {
+            "loss": "log_loss",
+            "penalty": "l1",
+            "alpha": 1.6992296128865824e-07,
+            "learning_rate": "optimal",
+            "eta0": 0.01,
+            "average": true,
+            "class_weight": "none"
+          },
+          "score": 0.00018772292096869148
         }
       ]
     },
@@ -2471,9 +4213,67 @@
             "min_samples_leaf": 1,
             "criterion": "gini",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.33333333333333326
+        }
+      ]
+    },
+    {
+      "dataset_id": "oil_spill",
+      "metafeatures": {
+        "ClassEntropy": 0.26293738565095587,
+        "ClassProbabilityMax": 0.9554140127388535,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.044585987261146494,
+        "ClassProbabilitySTD": 0.4554140127388535,
+        "DatasetRatio": 0.07802547770700637,
+        "InverseDatasetRatio": 12.816326530612244,
+        "KurtosisMax": 484.20592670581283,
+        "KurtosisMean": 46.950905193464656,
+        "KurtosisMin": -1.479353427886963,
+        "KurtosisSTD": 96.39132315945254,
+        "LogDatasetRatio": -2.550719868357572,
+        "LogInverseDatasetRatio": 2.550719868357572,
+        "LogNumberOfFeatures": 3.8918202981106265,
+        "LogNumberOfInstances": 6.4425401664681985,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 49.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 628.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 49.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 21.100820541381836,
+        "SkewnessMean": 3.748311360987524,
+        "SkewnessMin": -1.8945398330688477,
+        "SkewnessSTD": 5.091667301849941,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "673",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 0.00021148999718383549,
+            "learning_rate_init": 0.0007452270241186694,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.39130434782608703
         }
       ]
     },
@@ -2529,7 +4329,9 @@
             "min_samples_leaf": 15,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.02026221692491048
         }
@@ -2587,7 +4389,9 @@
             "min_samples_leaf": 13,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.019133937562940573
         }
@@ -2645,9 +4449,71 @@
             "min_samples_leaf": 2,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.005847953216374324
+        }
+      ]
+    },
+    {
+      "dataset_id": "ova_lung",
+      "metafeatures": {
+        "ClassEntropy": 0.4093488423003566,
+        "ClassProbabilityMax": 0.917953667953668,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.08204633204633205,
+        "ClassProbabilitySTD": 0.41795366795366795,
+        "DatasetRatio": 10.555019305019306,
+        "InverseDatasetRatio": 0.09474165523548239,
+        "KurtosisMax": 1027.2891845703125,
+        "KurtosisMean": 43.36857180031748,
+        "KurtosisMin": -0.9648969173431396,
+        "KurtosisSTD": 102.65266490019134,
+        "LogDatasetRatio": 2.3566015102914397,
+        "LogInverseDatasetRatio": -2.3566015102914397,
+        "LogNumberOfFeatures": 9.299723933110869,
+        "LogNumberOfInstances": 6.943122422819428,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 10935.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1036.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 10935.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 32.05495071411133,
+        "SkewnessMean": 3.85518594297023,
+        "SkewnessMin": -0.08893806487321854,
+        "SkewnessSTD": 4.03804152572107,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "317",
+          "model_name": "random_forest",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 20,
+            "min_samples_leaf": 4,
+            "criterion": "entropy",
+            "max_features": "sqrt",
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.007423117709437932
         }
       ]
     },
@@ -2703,9 +4569,179 @@
             "min_samples_leaf": 14,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.020179372197309475
+        }
+      ]
+    },
+    {
+      "dataset_id": "ova_prostate",
+      "metafeatures": {
+        "ClassEntropy": 0.266379433468784,
+        "ClassProbabilityMax": 0.9546332046332047,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.045366795366795366,
+        "ClassProbabilitySTD": 0.4546332046332046,
+        "DatasetRatio": 10.555019305019306,
+        "InverseDatasetRatio": 0.09474165523548239,
+        "KurtosisMax": 1029.6402567290502,
+        "KurtosisMean": 43.773042697241976,
+        "KurtosisMin": -0.8355803489685059,
+        "KurtosisSTD": 104.41279405218268,
+        "LogDatasetRatio": 2.3566015102914397,
+        "LogInverseDatasetRatio": -2.3566015102914397,
+        "LogNumberOfFeatures": 9.299723933110869,
+        "LogNumberOfInstances": 6.943122422819428,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 10935.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1036.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 10935.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 32.10872268676758,
+        "SkewnessMean": 3.860356788973826,
+        "SkewnessMin": -0.1979689747095108,
+        "SkewnessSTD": 4.0934355479082765,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "304",
+          "model_name": "random_forest",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 16,
+            "min_samples_leaf": 9,
+            "criterion": "gini",
+            "max_features": "sqrt",
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.0
+        }
+      ]
+    },
+    {
+      "dataset_id": "ozone-level-8hr",
+      "metafeatures": {
+        "ClassEntropy": 0.3506628156278551,
+        "ClassProbabilityMax": 0.934040047114252,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.06595995288574794,
+        "ClassProbabilitySTD": 0.43404004711425204,
+        "DatasetRatio": 0.04240282685512368,
+        "InverseDatasetRatio": 23.583333333333332,
+        "KurtosisMax": 39.847469329833984,
+        "KurtosisMean": 0.8056936557045813,
+        "KurtosisMin": -0.9508199691772461,
+        "KurtosisSTD": 4.697963099491929,
+        "LogDatasetRatio": -3.1605402478552374,
+        "LogInverseDatasetRatio": 3.1605402478552374,
+        "LogNumberOfFeatures": 4.276666119016055,
+        "LogNumberOfInstances": 7.437206366871292,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 72.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1698.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 72.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 5.52675724029541,
+        "SkewnessMean": 0.045048874233745866,
+        "SkewnessMin": -1.2771151065826416,
+        "SkewnessSTD": 0.9282271803050299,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "263",
+          "model_name": "qda",
+          "params": {
+            "reg_param": 0.585497512341966
+          },
+          "score": 0.5569620253164558
+        }
+      ]
+    },
+    {
+      "dataset_id": "parity5_plus_5",
+      "metafeatures": {
+        "ClassEntropy": 0.9988577556860622,
+        "ClassProbabilityMax": 0.519893899204244,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.48010610079575594,
+        "ClassProbabilitySTD": 0.01989389920424403,
+        "DatasetRatio": 0.013262599469496022,
+        "InverseDatasetRatio": 75.4,
+        "KurtosisMax": -1.9808841099163679,
+        "KurtosisMean": -1.996978650155781,
+        "KurtosisMin": -1.999971856354835,
+        "KurtosisSTD": 0.0055725042023654706,
+        "LogDatasetRatio": -4.32280727501391,
+        "LogInverseDatasetRatio": 4.32280727501391,
+        "LogNumberOfFeatures": 2.302585092994046,
+        "LogNumberOfInstances": 6.625392368007956,
+        "NumberOfCategoricalFeatures": 10.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 10.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 754.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.13826022596405688,
+        "SkewnessMean": -6.938893903907228e-18,
+        "SkewnessMin": -0.13826022596405652,
+        "SkewnessSTD": 0.05496680674933929,
+        "SymbolsMax": 2.0,
+        "SymbolsMean": 2.0,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 20.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "222",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 0.00021148999718383549,
+            "learning_rate_init": 0.0007452270241186694,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.0
         }
       ]
     },
@@ -2806,15 +4842,67 @@
       "candidates": [
         {
           "source_algorithm_id": "355",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.03395518465949071,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 58,
-            "l2_regularization": 0.04204951127548179
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 47
           },
           "score": 0.5319148936170213
+        }
+      ]
+    },
+    {
+      "dataset_id": "pc2",
+      "metafeatures": {
+        "ClassEntropy": 0.03977723380434904,
+        "ClassProbabilityMax": 0.9957276368491321,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.004272363150867824,
+        "ClassProbabilitySTD": 0.4957276368491322,
+        "DatasetRatio": 0.009612817089452604,
+        "InverseDatasetRatio": 104.02777777777777,
+        "KurtosisMax": 2117.5947092545425,
+        "KurtosisMean": 597.0928186648691,
+        "KurtosisMin": -1.0345407642029174,
+        "KurtosisSTD": 587.5714087553689,
+        "LogDatasetRatio": -4.64465795749521,
+        "LogInverseDatasetRatio": 4.64465795749521,
+        "LogNumberOfFeatures": 3.58351893845611,
+        "LogNumberOfInstances": 8.22817689595132,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 36.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 3745.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 36.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 41.3153076171875,
+        "SkewnessMean": 16.649161901738907,
+        "SkewnessMin": -2.661855936050415,
+        "SkewnessSTD": 12.239529119707905,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "634",
+          "model_name": "qda",
+          "params": {
+            "reg_param": 0.585497512341966
+          },
+          "score": 0.9259259259259259
         }
       ]
     },
@@ -2869,7 +4957,9 @@
             "min_samples_split": 6,
             "min_samples_leaf": 5,
             "criterion": "entropy",
-            "max_features": "sqrt"
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.5393939393939393
         }
@@ -2919,13 +5009,13 @@
       "candidates": [
         {
           "source_algorithm_id": "28",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.20745617619660972,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 35,
-            "l2_regularization": 0.5159664944264358
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 657
           },
           "score": 0.3653846153846154
         }
@@ -2983,7 +5073,9 @@
             "min_samples_leaf": 1,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.1670081967213114
         }
@@ -3033,13 +5125,13 @@
       "candidates": [
         {
           "source_algorithm_id": "506",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.32492608616908225,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 23,
-            "l2_regularization": 0.00016321013858597186
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 773
           },
           "score": 0.020516533912623647
         }
@@ -3142,15 +5234,71 @@
       "candidates": [
         {
           "source_algorithm_id": "238",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.24233932723531437,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 17,
-            "l2_regularization": 1.9280388598217333e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 35
           },
           "score": 0.014970974641002277
+        }
+      ]
+    },
+    {
+      "dataset_id": "pollen",
+      "metafeatures": {
+        "ClassEntropy": 0.9999816713531784,
+        "ClassProbabilityMax": 0.5025203567274137,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.49747964327258626,
+        "ClassProbabilitySTD": 0.002520356727413714,
+        "DatasetRatio": 0.0019387359441644049,
+        "InverseDatasetRatio": 515.8,
+        "KurtosisMax": 0.18548321723937988,
+        "KurtosisMean": -0.10062079429626465,
+        "KurtosisMin": -0.35466694831848145,
+        "KurtosisSTD": 0.17686474358097606,
+        "LogDatasetRatio": -6.245719093447244,
+        "LogInverseDatasetRatio": 6.245719093447244,
+        "LogNumberOfFeatures": 1.6094379124341003,
+        "LogNumberOfInstances": 7.8551570058813445,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 5.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 2579.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 5.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.15023674070835114,
+        "SkewnessMean": 0.037916721682995556,
+        "SkewnessMin": -0.16229106485843658,
+        "SkewnessSTD": 0.11361858327370701,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "67",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 1.103855734598575e-05,
+            "learning_rate_init": 0.00014375616988222174,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.4393723252496434
         }
       ]
     },
@@ -3198,15 +5346,71 @@
       "candidates": [
         {
           "source_algorithm_id": "150",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.11726168664931935,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 137,
-            "l2_regularization": 0.0015058615609873215
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 13
           },
           "score": 0.8997165261569047
+        }
+      ]
+    },
+    {
+      "dataset_id": "profb",
+      "metafeatures": {
+        "ClassEntropy": 0.8961958043568364,
+        "ClassProbabilityMax": 0.6873614190687362,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.31263858093126384,
+        "ClassProbabilitySTD": 0.18736141906873616,
+        "DatasetRatio": 0.019955654101995565,
+        "InverseDatasetRatio": 50.111111111111114,
+        "KurtosisMax": 85.21121076233185,
+        "KurtosisMean": 24.81275410283207,
+        "KurtosisMin": -1.48338997292351,
+        "KurtosisSTD": 18.358850143841178,
+        "LogDatasetRatio": -3.914242762166459,
+        "LogInverseDatasetRatio": 3.914242762166459,
+        "LogNumberOfFeatures": 2.1972245773362196,
+        "LogNumberOfInstances": 6.111467339502679,
+        "NumberOfCategoricalFeatures": 4.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 9.0,
+        "NumberOfFeaturesWithMissingValues": 2.0,
+        "NumberOfInstances": 451.0,
+        "NumberOfInstancesWithMissingValues": 445.0,
+        "NumberOfMissingValues": 801.0,
+        "NumberOfNumericFeatures": 5.0,
+        "PercentageOfFeaturesWithMissingValues": 0.2222222222222222,
+        "PercentageOfInstancesWithMissingValues": 0.9866962305986696,
+        "PercentageOfMissingValues": 0.1973392461197339,
+        "RatioNominalToNumerical": 0.8,
+        "RatioNumericalToNominal": 1.25,
+        "SkewnessMax": 9.338694275022172,
+        "SkewnessMean": 4.615901215108273,
+        "SkewnessMin": -3.9809386777065074,
+        "SkewnessSTD": 2.321702662612291,
+        "SymbolsMax": 28.0,
+        "SymbolsMean": 15.25,
+        "SymbolsMin": 1.0,
+        "SymbolsSTD": 12.794041581923986,
+        "SymbolsSum": 61.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "379",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 115,
+            "alpha": 3.752596085314245e-05,
+            "learning_rate_init": 0.0017270365095471856,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.32571428571428573
         }
       ]
     },
@@ -3254,15 +5458,189 @@
       "candidates": [
         {
           "source_algorithm_id": "532",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.01456925523210092,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 140,
-            "l2_regularization": 1.3589351886855206e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 1153
           },
           "score": 0.08127721335268512
+        }
+      ]
+    },
+    {
+      "dataset_id": "puma8nh",
+      "metafeatures": {
+        "ClassEntropy": 0.9999971030317016,
+        "ClassProbabilityMax": 0.501002004008016,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.49899799599198397,
+        "ClassProbabilitySTD": 0.0010020040080160053,
+        "DatasetRatio": 0.0014574603752960467,
+        "InverseDatasetRatio": 686.125,
+        "KurtosisMax": -1.1829525232315063,
+        "KurtosisMean": -1.196894571185112,
+        "KurtosisMin": -1.212108850479126,
+        "KurtosisSTD": 0.008263880029020867,
+        "LogDatasetRatio": -6.531059826870053,
+        "LogInverseDatasetRatio": 6.531059826870053,
+        "LogNumberOfFeatures": 2.0794415416798357,
+        "LogNumberOfInstances": 8.610501368549889,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 8.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 5489.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 8.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.04570005461573601,
+        "SkewnessMean": -0.0064552060212008655,
+        "SkewnessMin": -0.031133590266108513,
+        "SkewnessSTD": 0.021604194896195243,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "626",
+          "model_name": "random_forest",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 2,
+            "min_samples_leaf": 18,
+            "criterion": "entropy",
+            "max_features": "sqrt",
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.16374487131667292
+        }
+      ]
+    },
+    {
+      "dataset_id": "qsar-biodeg",
+      "metafeatures": {
+        "ClassEntropy": 0.9201702027239149,
+        "ClassProbabilityMax": 0.6647807637906648,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.3352192362093352,
+        "ClassProbabilitySTD": 0.16478076379066478,
+        "DatasetRatio": 0.05799151343705799,
+        "InverseDatasetRatio": 17.24390243902439,
+        "KurtosisMax": 585.4510498046875,
+        "KurtosisMean": 41.48030315044416,
+        "KurtosisMin": -0.2529125213623047,
+        "KurtosisSTD": 95.17568446650067,
+        "LogDatasetRatio": -2.847458599192265,
+        "LogInverseDatasetRatio": 2.8474585991922647,
+        "LogNumberOfFeatures": 3.713572066704308,
+        "LogNumberOfInstances": 6.561030665896573,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 41.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 707.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 41.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 23.23834228515625,
+        "SkewnessMean": 3.8326471032711065,
+        "SkewnessMin": -1.5003634691238403,
+        "SkewnessSTD": 4.5083877644327695,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "601",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 202,
+            "alpha": 0.0017940473175767063,
+            "learning_rate_init": 0.0004684917334431039,
+            "activation": "relu",
+            "solver": "adam"
+          },
+          "score": 0.1724137931034483
+        }
+      ]
+    },
+    {
+      "dataset_id": "quake",
+      "metafeatures": {
+        "ClassEntropy": 0.9915354501600642,
+        "ClassProbabilityMax": 0.5541095890410959,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.4458904109589041,
+        "ClassProbabilitySTD": 0.05410958904109589,
+        "DatasetRatio": 0.002054794520547945,
+        "InverseDatasetRatio": 486.6666666666667,
+        "KurtosisMax": 11.286622047424316,
+        "KurtosisMean": 3.2230947812398276,
+        "KurtosisMin": -0.8405795097351074,
+        "KurtosisSTD": 5.70183434048272,
+        "LogDatasetRatio": -6.187579426034272,
+        "LogInverseDatasetRatio": 6.187579426034272,
+        "LogNumberOfFeatures": 1.0986122886681098,
+        "LogNumberOfInstances": 7.286191714702382,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 3.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1460.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 3.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 3.3211071491241455,
+        "SkewnessMean": 0.8455618818600973,
+        "SkewnessMin": -0.8466188311576843,
+        "SkewnessSTD": 1.7893630114868855,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "324",
+          "model_name": "sgd",
+          "params": {
+            "loss": "hinge",
+            "penalty": "l2",
+            "alpha": 1.0167889119272985e-06,
+            "learning_rate": "adaptive",
+            "eta0": 2.9862052243324184e-07,
+            "average": false,
+            "class_weight": "none"
+          },
+          "score": 0.39217652958876625
         }
       ]
     },
@@ -3362,13 +5740,13 @@
       "candidates": [
         {
           "source_algorithm_id": "375",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.10000000000000002,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 15,
-            "l2_regularization": 7.619920375943215e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 31
           },
           "score": 0.03633373998833078
         }
@@ -3471,13 +5849,13 @@
       "candidates": [
         {
           "source_algorithm_id": "37",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.11042628136263043,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 22,
-            "l2_regularization": 1.0945814167023392e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 30
           },
           "score": 0.008416010947656427
         }
@@ -3537,6 +5915,65 @@
       ]
     },
     {
+      "dataset_id": "sensory",
+      "metafeatures": {
+        "ClassEntropy": 0.9825001284030712,
+        "ClassProbabilityMax": 0.5777202072538861,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.422279792746114,
+        "ClassProbabilitySTD": 0.07772020725388604,
+        "DatasetRatio": 0.02849740932642487,
+        "InverseDatasetRatio": 35.09090909090909,
+        "KurtosisMax": 1.7228010159125056,
+        "KurtosisMean": -0.7841048542016763,
+        "KurtosisMin": -1.9990332975295384,
+        "KurtosisSTD": 1.055099276952362,
+        "LogDatasetRatio": -3.5579420966664603,
+        "LogInverseDatasetRatio": 3.5579420966664603,
+        "LogNumberOfFeatures": 2.3978952727983707,
+        "LogNumberOfInstances": 5.955837369464831,
+        "NumberOfCategoricalFeatures": 11.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 11.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 386.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 1.92945614511253,
+        "SkewnessMean": 0.930274160643709,
+        "SkewnessMin": -0.04145968249040012,
+        "SkewnessSTD": 0.5920178475662422,
+        "SymbolsMax": 6.0,
+        "SymbolsMean": 3.272727272727273,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 1.2128785512842122,
+        "SymbolsSum": 36.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "567",
+          "model_name": "extra_trees",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 3,
+            "min_samples_leaf": 3,
+            "criterion": "entropy",
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.3333333333333335
+        }
+      ]
+    },
+    {
       "dataset_id": "skin-segmentation",
       "metafeatures": {
         "ClassEntropy": 0.7378736147990802,
@@ -3586,9 +6023,68 @@
             "kernel": "rbf",
             "gamma": 0.016364556691954846,
             "degree": 3,
-            "coef0": 0.0
+            "coef0": 0.0,
+            "class_weight": "none"
           },
           "score": 0.0002025868786037499
+        }
+      ]
+    },
+    {
+      "dataset_id": "socmob",
+      "metafeatures": {
+        "ClassEntropy": 0.7589877064823829,
+        "ClassProbabilityMax": 0.7806451612903226,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.21935483870967742,
+        "ClassProbabilitySTD": 0.2806451612903226,
+        "DatasetRatio": 0.0064516129032258064,
+        "InverseDatasetRatio": 155.0,
+        "KurtosisMax": 34.6157861907555,
+        "KurtosisMean": 11.285726905167703,
+        "KurtosisMin": -1.9985009993337775,
+        "KurtosisSTD": 5.850775584316327,
+        "LogDatasetRatio": -5.043425116919247,
+        "LogInverseDatasetRatio": 5.043425116919247,
+        "LogNumberOfFeatures": 1.6094379124341003,
+        "LogNumberOfInstances": 6.652863029353347,
+        "NumberOfCategoricalFeatures": 4.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 5.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 775.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 1.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 4.0,
+        "RatioNumericalToNominal": 0.25,
+        "SkewnessMax": 5.170062934854295,
+        "SkewnessMean": 3.4098735883140034,
+        "SkewnessMin": -0.06454972243679008,
+        "SkewnessSTD": 1.1853251876450355,
+        "SymbolsMax": 17.0,
+        "SymbolsMean": 9.5,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 7.5,
+        "SymbolsSum": 38.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "668",
+          "model_name": "sgd",
+          "params": {
+            "loss": "log_loss",
+            "penalty": "l1",
+            "alpha": 0.0002346515712987664,
+            "learning_rate": "optimal",
+            "eta0": 0.01,
+            "average": true,
+            "class_weight": "none"
+          },
+          "score": 0.1165644171779141
         }
       ]
     },
@@ -3643,7 +6139,9 @@
             "min_samples_split": 4,
             "min_samples_leaf": 1,
             "criterion": "gini",
-            "max_features": "sqrt"
+            "max_features": "sqrt",
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.11985018726591756
         }
@@ -3693,13 +6191,13 @@
       "candidates": [
         {
           "source_algorithm_id": "690",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.024432206340259912,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 189,
-            "l2_regularization": 0.00487178522148225
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 9
           },
           "score": 0.052631578947368474
         }
@@ -3757,9 +6255,67 @@
             "min_samples_leaf": 15,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.44728761514841353
+        }
+      ]
+    },
+    {
+      "dataset_id": "steel-plates-fault",
+      "metafeatures": {
+        "ClassEntropy": 0.9443547030267275,
+        "ClassProbabilityMax": 0.6379707916986933,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.3620292083013067,
+        "ClassProbabilitySTD": 0.1379707916986933,
+        "DatasetRatio": 0.02536510376633359,
+        "InverseDatasetRatio": 39.42424242424242,
+        "KurtosisMax": 30.96304702758789,
+        "KurtosisMean": 5.229958094222913,
+        "KurtosisMin": -1.8830041885375977,
+        "KurtosisSTD": 9.159290860687747,
+        "LogDatasetRatio": -3.674380917046025,
+        "LogInverseDatasetRatio": 3.674380917046025,
+        "LogNumberOfFeatures": 3.4965075614664802,
+        "LogNumberOfInstances": 7.170888478512505,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 33.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1301.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 33.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 5.591684341430664,
+        "SkewnessMean": 1.5151810998266393,
+        "SkewnessMin": -0.8763390183448792,
+        "SkewnessSTD": 1.68213778251707,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "162",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 0.00021148999718383549,
+            "learning_rate_init": 0.0007452270241186694,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.0
         }
       ]
     },
@@ -3860,13 +6416,13 @@
       "candidates": [
         {
           "source_algorithm_id": "75",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.16262682406125173,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 20,
-            "l2_regularization": 1e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 66
           },
           "score": 0.0
         }
@@ -3916,15 +6472,71 @@
       "candidates": [
         {
           "source_algorithm_id": "702",
-          "model_name": "hist_gradient_boosting",
+          "model_name": "gradient_boosting",
           "params": {
+            "n_estimators": 512,
             "learning_rate": 0.30755227194768237,
-            "max_iter": 200,
-            "max_depth": 12,
-            "min_samples_leaf": 39,
-            "l2_regularization": 3.387912939529945e-10
+            "max_depth": 6,
+            "subsample": 0.75,
+            "max_leaf_nodes": 60
           },
           "score": 0.0
+        }
+      ]
+    },
+    {
+      "dataset_id": "titanic",
+      "metafeatures": {
+        "ClassEntropy": 0.9036426705032128,
+        "ClassProbabilityMax": 0.680677966101695,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.3193220338983051,
+        "ClassProbabilitySTD": 0.1806779661016949,
+        "DatasetRatio": 0.002033898305084746,
+        "InverseDatasetRatio": 491.6666666666667,
+        "KurtosisMax": 13.727470224506565,
+        "KurtosisMean": 4.3252465146802885,
+        "KurtosisMin": -0.7475664615631104,
+        "KurtosisSTD": 6.655299629659194,
+        "LogDatasetRatio": -6.197800980105811,
+        "LogInverseDatasetRatio": 6.197800980105811,
+        "LogNumberOfFeatures": 1.0986122886681098,
+        "LogNumberOfInstances": 7.29641326877392,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 3.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 1475.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 3.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 3.9657859802246094,
+        "SkewnessMean": 0.6176448265711466,
+        "SkewnessMin": -1.412740707397461,
+        "SkewnessSTD": 2.3853018309742926,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "72",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 46,
+            "alpha": 3.326597152068929e-06,
+            "learning_rate_init": 0.026348675221102794,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.4029850746268657
         }
       ]
     },
@@ -3980,7 +6592,9 @@
             "min_samples_leaf": 1,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": true
+            "bootstrap": true,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.060109289617486406
         }
@@ -4085,10 +6699,184 @@
           "model_name": "knn",
           "params": {
             "n_neighbors": 3,
+            "weights": "distance",
             "p": 1,
-            "weights": "distance"
+            "algorithm": "auto",
+            "leaf_size": 55
           },
           "score": 0.0004030632809350898
+        }
+      ]
+    },
+    {
+      "dataset_id": "water-treatment",
+      "metafeatures": {
+        "ClassEntropy": 0.6500224216483541,
+        "ClassProbabilityMax": 0.8333333333333334,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.16666666666666666,
+        "ClassProbabilitySTD": 0.33333333333333337,
+        "DatasetRatio": 0.1016949152542373,
+        "InverseDatasetRatio": 9.833333333333334,
+        "KurtosisMax": 211.85331403679933,
+        "KurtosisMean": 53.15124242095574,
+        "KurtosisMin": -3.0,
+        "KurtosisSTD": 27.898971989560692,
+        "LogDatasetRatio": -2.2857779746776643,
+        "LogInverseDatasetRatio": 2.2857779746776643,
+        "LogNumberOfFeatures": 3.58351893845611,
+        "LogNumberOfInstances": 5.869296913133774,
+        "NumberOfCategoricalFeatures": 15.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 36.0,
+        "NumberOfFeaturesWithMissingValues": 27.0,
+        "NumberOfInstances": 354.0,
+        "NumberOfInstancesWithMissingValues": 91.0,
+        "NumberOfMissingValues": 382.0,
+        "NumberOfNumericFeatures": 21.0,
+        "PercentageOfFeaturesWithMissingValues": 0.75,
+        "PercentageOfInstancesWithMissingValues": 0.2570621468926554,
+        "PercentageOfMissingValues": 0.02997489014438167,
+        "RatioNominalToNumerical": 0.7142857142857143,
+        "RatioNumericalToNominal": 1.4,
+        "SkewnessMax": 13.444925575753192,
+        "SkewnessMean": 6.694907927094214,
+        "SkewnessMin": -9.247238970169882,
+        "SkewnessSTD": 3.120824713100137,
+        "SymbolsMax": 300.0,
+        "SymbolsMean": 174.53333333333333,
+        "SymbolsMin": 38.0,
+        "SymbolsSTD": 90.28020577931552,
+        "SymbolsSum": 2618.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "461",
+          "model_name": "random_forest",
+          "params": {
+            "n_estimators": 512,
+            "max_depth": 64,
+            "min_samples_split": 3,
+            "min_samples_leaf": 2,
+            "criterion": "entropy",
+            "max_features": "sqrt",
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
+          },
+          "score": 0.0
+        }
+      ]
+    },
+    {
+      "dataset_id": "wdbc",
+      "metafeatures": {
+        "ClassEntropy": 0.9539503770757787,
+        "ClassProbabilityMax": 0.6256544502617801,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.3743455497382199,
+        "ClassProbabilitySTD": 0.12565445026178013,
+        "DatasetRatio": 0.07853403141361257,
+        "InverseDatasetRatio": 12.733333333333333,
+        "KurtosisMax": 52.25577926635742,
+        "KurtosisMean": 7.180685274117483,
+        "KurtosisMin": -0.5706393718719482,
+        "KurtosisSTD": 13.216565810074442,
+        "LogDatasetRatio": -2.54422322694442,
+        "LogInverseDatasetRatio": 2.54422322694442,
+        "LogNumberOfFeatures": 3.4011973816621555,
+        "LogNumberOfInstances": 5.945420608606575,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 30.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 382.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 30.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 5.667228698730469,
+        "SkewnessMean": 1.6508581946293512,
+        "SkewnessMin": 0.3700108230113983,
+        "SkewnessSTD": 1.2933670011436562,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "176",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 0.0001363185819149026,
+            "learning_rate_init": 0.00018009776276177523,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.014705882352941124
+        }
+      ]
+    },
+    {
+      "dataset_id": "wilt",
+      "metafeatures": {
+        "ClassEntropy": 0.3068064121394236,
+        "ClassProbabilityMax": 0.9451125501079247,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.05488744989207524,
+        "ClassProbabilitySTD": 0.4451125501079248,
+        "DatasetRatio": 0.001541782300339192,
+        "InverseDatasetRatio": 648.6,
+        "KurtosisMax": 142.87164306640625,
+        "KurtosisMean": 56.732766437530515,
+        "KurtosisMin": 0.23101377487182617,
+        "KurtosisSTD": 60.841158367668505,
+        "LogDatasetRatio": -6.474816193873218,
+        "LogInverseDatasetRatio": 6.474816193873218,
+        "LogNumberOfFeatures": 1.6094379124341003,
+        "LogNumberOfInstances": 8.084254106307318,
+        "NumberOfCategoricalFeatures": 0.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 5.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 3243.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 5.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 8.73403549194336,
+        "SkewnessMean": 3.783587571978569,
+        "SkewnessMin": -0.6337890625,
+        "SkewnessSTD": 3.9197490429056585,
+        "SymbolsMax": 0.0,
+        "SymbolsMean": 0.0,
+        "SymbolsMin": 0.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 0.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "422",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 51,
+            "alpha": 0.004046109807229298,
+            "learning_rate_init": 0.00010292125690429162,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.08641975308641991
         }
       ]
     },
@@ -4144,9 +6932,67 @@
             "min_samples_leaf": 4,
             "criterion": "entropy",
             "max_features": "sqrt",
-            "bootstrap": false
+            "bootstrap": false,
+            "max_leaf_nodes": 257,
+            "class_weight": "none"
           },
           "score": 0.131107885824867
+        }
+      ]
+    },
+    {
+      "dataset_id": "xd6",
+      "metafeatures": {
+        "ClassEntropy": 0.9337938045924924,
+        "ClassProbabilityMax": 0.6503067484662577,
+        "ClassProbabilityMean": 0.5,
+        "ClassProbabilityMin": 0.3496932515337423,
+        "ClassProbabilitySTD": 0.1503067484662577,
+        "DatasetRatio": 0.013803680981595092,
+        "InverseDatasetRatio": 72.44444444444444,
+        "KurtosisMax": -1.974393939393939,
+        "KurtosisMean": -1.9954219558657829,
+        "KurtosisMin": -1.9998494429388736,
+        "KurtosisSTD": 0.007631623378273193,
+        "LogDatasetRatio": -4.282819984590434,
+        "LogInverseDatasetRatio": 4.282819984590433,
+        "LogNumberOfFeatures": 2.1972245773362196,
+        "LogNumberOfInstances": 6.480044561926653,
+        "NumberOfCategoricalFeatures": 9.0,
+        "NumberOfClasses": 2.0,
+        "NumberOfFeatures": 9.0,
+        "NumberOfFeaturesWithMissingValues": 0.0,
+        "NumberOfInstances": 652.0,
+        "NumberOfInstancesWithMissingValues": 0.0,
+        "NumberOfMissingValues": 0.0,
+        "NumberOfNumericFeatures": 0.0,
+        "PercentageOfFeaturesWithMissingValues": 0.0,
+        "PercentageOfInstancesWithMissingValues": 0.0,
+        "PercentageOfMissingValues": 0.0,
+        "RatioNominalToNumerical": 0.0,
+        "RatioNumericalToNominal": 0.0,
+        "SkewnessMax": 0.16001893827313257,
+        "SkewnessMean": 3.854941057726238e-19,
+        "SkewnessMin": -0.16001893827313257,
+        "SkewnessSTD": 0.06766124543796773,
+        "SymbolsMax": 2.0,
+        "SymbolsMean": 2.0,
+        "SymbolsMin": 2.0,
+        "SymbolsSTD": 0.0,
+        "SymbolsSum": 18.0
+      },
+      "candidates": [
+        {
+          "source_algorithm_id": "22",
+          "model_name": "mlp",
+          "params": {
+            "hidden_layer_sizes": 256,
+            "alpha": 0.00021148999718383549,
+            "learning_rate_init": 0.0007452270241186694,
+            "activation": "tanh",
+            "solver": "adam"
+          },
+          "score": 0.0
         }
       ]
     }

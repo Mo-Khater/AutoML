@@ -289,6 +289,9 @@ class ClassificationEvaluator:
             "passive_aggressive",
             "qda",
             "sgd",
+            "ridge_classifier",
+            "mlp",
+            "gaussian_process",
         }:
             candidates.extend(["standard", "robust"])
         elif model_name == "logistic_regression":

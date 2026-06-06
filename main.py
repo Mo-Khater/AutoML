@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from pathlib import Path
 from time import perf_counter
+import csv
 
 import pandas as pd
 from sklearn.datasets import load_breast_cancer, load_digits, fetch_covtype
@@ -8,6 +10,21 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
 from automl.classification import AutoMLClassifier
+
+
+DATA_ROOT = Path(__file__).resolve().parent / "data"
+RESULTS_FILE = DATA_ROOT / "main_results.csv"
+
+
+def save_result(result: dict[str, object]) -> None:
+    RESULTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    fieldnames = ["dataset", "framework", "fit_time_sec", "test_accuracy"]
+    file_exists = RESULTS_FILE.exists()
+    with RESULTS_FILE.open("a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(result)
 
 
 def run_benchmark(
@@ -45,7 +62,15 @@ def run_benchmark(
     print("Fit time (sec):", round(custom_duration, 3))
     print("Best score:", custom_automl.best_score_)
     print("Leaderboard:", custom_automl.leaderboard(top_n=5))
-    print("Test accuracy:", custom_automl.score(X_test, y_test))
+    custom_accuracy = custom_automl.score(X_test, y_test)
+    print("Test accuracy:", custom_accuracy)
+
+    save_result({
+        "dataset": dataset_name,
+        "framework": "custom_automl",
+        "fit_time_sec": round(custom_duration, 3),
+        "test_accuracy": float(custom_accuracy),
+    })
 
     try:
         from autogluon.tabular import TabularPredictor
@@ -77,6 +102,13 @@ def run_benchmark(
     print("Test accuracy:", float(ag_accuracy))
     print("Leaderboard:")
     print(predictor.leaderboard(test_df, silent=True))
+
+    save_result({
+        "dataset": dataset_name,
+        "framework": "autogluon",
+        "fit_time_sec": round(autogluon_duration, 3),
+        "test_accuracy": float(ag_accuracy),
+    })
 
 
 def main() -> None:

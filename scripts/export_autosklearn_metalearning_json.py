@@ -1,23 +1,48 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import json
+import re
+import sys
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 import arff
+from sklearn.naive_bayes import GaussianNB as SklearnGaussianNB
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+AUTO_SKLEARN_ROOT = REPO_ROOT.parent / "auto-sklearn"
+if str(AUTO_SKLEARN_ROOT) not in sys.path:
+    sys.path.insert(0, str(AUTO_SKLEARN_ROOT))
+AUTO_SKLEARN_COMPONENT_ROOT = (
+    AUTO_SKLEARN_ROOT / "autosklearn" / "pipeline" / "components" / "classification"
+)
+
+from automl.components.classification import get_classification_components
 
 
 SUPPORTED_MODEL_MAPPERS = {
     "adaboost": "_map_adaboost",
+    "bernoulli_nb": "_map_bernoulli_nb",
+    "decision_tree": "_map_decision_tree",
     "extra_trees": "_map_extra_trees",
     "gaussian_nb": "_map_gaussian_nb",
     "gradient_boosting": "_map_gradient_boosting",
     "k_nearest_neighbors": "_map_knn",
     "lda": "_map_lda",
+    "liblinear_svc": "_map_liblinear_svc",
     "libsvm_svc": "_map_svc",
+    "mlp": "_map_mlp",
+    "multinomial_nb": "_map_multinomial_nb",
+    "passive_aggressive": "_map_passive_aggressive",
+    "qda": "_map_qda",
     "random_forest": "_map_random_forest",
+    "sgd": "_map_sgd",
 }
 
 
@@ -72,7 +97,6 @@ def _map_max_features(value: Any) -> str | None:
         numeric = float(value)
     except Exception:
         return None
-
     if numeric <= 0.35:
         return "log2"
     if numeric <= 0.8:
@@ -80,97 +104,224 @@ def _map_max_features(value: Any) -> str | None:
     return None
 
 
-def _map_adaboost(row: dict[str, Any]) -> dict[str, Any] | None:
+def _map_hist_gradient_boosting_early_stopping(value: Any) -> bool:
+    value = _none_if_missing(value)
+    if value is None:
+        return False
+    value_str = str(value).strip().lower()
+    return value_str in {"train", "valid", "on", "true", "1"}
+
+
+@lru_cache(maxsize=None)
+def _askl_component_source(filename: str) -> str:
+    return (AUTO_SKLEARN_COMPONENT_ROOT / filename).read_text(encoding="utf-8")
+
+
+def _askl_get_max_iter(filename: str) -> int | None:
+    source = _askl_component_source(filename)
+    match = re.search(r"def get_max_iter\(\):\s+return\s+([0-9]+)", source)
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def _askl_constant_or_default(filename: str, hyperparameter_name: str) -> Any:
+    source = _askl_component_source(filename)
+    patterns = [
+        rf'Constant\(\s*(?:name\s*=\s*)?["\']{re.escape(hyperparameter_name)}["\']\s*,\s*(?:value\s*=\s*)?([^)]+?)\s*\)',
+        rf'UnParametrizedHyperparameter\(\s*(?:name\s*=\s*)?["\']{re.escape(hyperparameter_name)}["\']\s*,\s*(?:value\s*=\s*)?([^)]+?)\s*\)',
+        rf'(?:UniformFloatHyperparameter|UniformIntegerHyperparameter|CategoricalHyperparameter)\([^)]*(?:name\s*=\s*)?["\']{re.escape(hyperparameter_name)}["\'][^)]*default_value\s*=\s*([^,\)]+)',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, source)
+        if match:
+            try:
+                return ast.literal_eval(match.group(1).strip())
+            except Exception:
+                return None
+    return None
+
+
+@lru_cache(maxsize=None)
+def _current_model_defaults(model_name: str) -> dict[str, Any]:
+    component = get_classification_components()[model_name]
+    defaults: dict[str, Any] = {}
+    prefix = f"{model_name}:"
+    for hyperparameter in component.build_hyperparameters():
+        hyper_name = getattr(hyperparameter, "name", "")
+        if not hyper_name.startswith(prefix):
+            continue
+        param_name = hyper_name[len(prefix):]
+        if hasattr(hyperparameter, "value"):
+            defaults[param_name] = hyperparameter.value
+        else:
+            defaults[param_name] = getattr(hyperparameter, "default_value", None)
+    return defaults
+
+
+def _project_to_current_model(
+    model_name: str,
+    params: dict[str, Any],
+) -> dict[str, Any] | None:
+    defaults = dict(_current_model_defaults(model_name))
+    if not defaults and model_name not in get_classification_components():
+        return None
+    for key, value in params.items():
+        if value is not None:
+            defaults[key] = value
     return {
-        "model_name": "adaboost",
-        "params": {
+        "model_name": model_name,
+        "params": defaults,
+    }
+
+
+def _map_adaboost(row: dict[str, Any]) -> dict[str, Any] | None:
+    return _project_to_current_model(
+        "adaboost",
+        {
             "n_estimators": _to_int(row.get("classifier:adaboost:n_estimators")),
             "learning_rate": _to_float(row.get("classifier:adaboost:learning_rate")),
         },
-    }
+    )
+
+
+def _map_bernoulli_nb(row: dict[str, Any]) -> dict[str, Any] | None:
+    return _project_to_current_model(
+        "bernoulli_nb",
+        {
+            "alpha": _to_float(row.get("classifier:bernoulli_nb:alpha")),
+            "fit_prior": _to_bool(row.get("classifier:bernoulli_nb:fit_prior"), default=True),
+        },
+    )
+
+
+def _map_decision_tree(row: dict[str, Any]) -> dict[str, Any] | None:
+    max_depth_factor = _to_float(row.get("classifier:decision_tree:max_depth_factor"))
+    max_depth = None
+    if max_depth_factor is not None:
+        max_depth = max(1, min(64, int(round(max_depth_factor * 32))))
+
+    return _project_to_current_model(
+        "decision_tree",
+        {
+            "criterion": _none_if_missing(row.get("classifier:decision_tree:criterion")) or "gini",
+            "max_depth": max_depth,
+            "min_samples_split": _to_int(row.get("classifier:decision_tree:min_samples_split"), default=2),
+            "min_samples_leaf": _to_int(row.get("classifier:decision_tree:min_samples_leaf"), default=1),
+            "max_features": _map_max_features(row.get("classifier:decision_tree:max_features")),
+        },
+    )
 
 
 def _map_gaussian_nb(row: dict[str, Any]) -> dict[str, Any] | None:
-    return {
-        "model_name": "gaussian_nb",
-        "params": {
-            "var_smoothing": 1e-9,
+    return _project_to_current_model(
+        "gaussian_nb",
+        {
+            "var_smoothing": float(SklearnGaussianNB().get_params()["var_smoothing"]),
         },
-    }
+    )
 
 
 def _map_knn(row: dict[str, Any]) -> dict[str, Any] | None:
-    return {
-        "model_name": "knn",
-        "params": {
+    return _project_to_current_model(
+        "knn",
+        {
             "n_neighbors": _to_int(row.get("classifier:k_nearest_neighbors:n_neighbors")),
             "p": _to_int(row.get("classifier:k_nearest_neighbors:p")),
             "weights": _none_if_missing(row.get("classifier:k_nearest_neighbors:weights")),
         },
-    }
+    )
+
+
+def _map_liblinear_svc(row: dict[str, Any]) -> dict[str, Any] | None:
+    penalty = _none_if_missing(row.get("classifier:liblinear_svc:penalty")) or "l2"
+    loss = _none_if_missing(row.get("classifier:liblinear_svc:loss")) or "squared_hinge"
+    if penalty == "l1" and loss != "squared_hinge":
+        loss = "squared_hinge"
+    return _project_to_current_model(
+        "liblinear_svc",
+        {
+            "C": _to_float(row.get("classifier:liblinear_svc:C")),
+            "loss": loss,
+        },
+    )
 
 
 def _map_svc(row: dict[str, Any]) -> dict[str, Any] | None:
-    return {
-        "model_name": "svc",
-        "params": {
+    return _project_to_current_model(
+        "svc",
+        {
             "C": _to_float(row.get("classifier:libsvm_svc:C")),
             "kernel": _none_if_missing(row.get("classifier:libsvm_svc:kernel")),
             "gamma": _to_float(row.get("classifier:libsvm_svc:gamma")),
-            "degree": _to_int(row.get("classifier:libsvm_svc:degree"), default=3),
-            "coef0": _to_float(row.get("classifier:libsvm_svc:coef0"), default=0.0),
+            "degree": _to_int(
+                row.get("classifier:libsvm_svc:degree"),
+                default=_to_int(_askl_constant_or_default("libsvm_svc.py", "degree")),
+            ),
+            "coef0": _to_float(
+                row.get("classifier:libsvm_svc:coef0"),
+                default=_to_float(_askl_constant_or_default("libsvm_svc.py", "coef0")),
+            ),
         },
-    }
+    )
 
 
 def _map_random_forest(row: dict[str, Any]) -> dict[str, Any] | None:
-    return {
-        "model_name": "random_forest",
-        "params": {
-            "n_estimators": 512,
+    return _project_to_current_model(
+        "random_forest",
+        {
+            "n_estimators": _askl_get_max_iter("random_forest.py"),
             "max_depth": _to_int(row.get("classifier:random_forest:max_depth"), default=64),
             "min_samples_split": _to_int(row.get("classifier:random_forest:min_samples_split"), default=2),
             "min_samples_leaf": _to_int(row.get("classifier:random_forest:min_samples_leaf"), default=1),
             "criterion": _none_if_missing(row.get("classifier:random_forest:criterion")) or "gini",
             "max_features": _map_max_features(row.get("classifier:random_forest:max_features")),
             "bootstrap": _to_bool(row.get("classifier:random_forest:bootstrap"), default=True),
+            "max_leaf_nodes": _to_int(
+                row.get("classifier:random_forest:max_leaf_nodes"),
+                default=_to_int(_askl_constant_or_default("random_forest.py", "max_leaf_nodes")),
+            ),
         },
-    }
+    )
 
 
 def _map_extra_trees(row: dict[str, Any]) -> dict[str, Any] | None:
-    return {
-        "model_name": "extra_trees",
-        "params": {
-            "n_estimators": 512,
+    return _project_to_current_model(
+        "extra_trees",
+        {
+            "n_estimators": _askl_get_max_iter("extra_trees.py"),
             "max_depth": _to_int(row.get("classifier:extra_trees:max_depth"), default=64),
             "min_samples_split": _to_int(row.get("classifier:extra_trees:min_samples_split"), default=2),
             "min_samples_leaf": _to_int(row.get("classifier:extra_trees:min_samples_leaf"), default=1),
             "criterion": _none_if_missing(row.get("classifier:extra_trees:criterion")) or "gini",
             "max_features": _map_max_features(row.get("classifier:extra_trees:max_features")),
+            "max_leaf_nodes": _to_int(
+                row.get("classifier:extra_trees:max_leaf_nodes"),
+                default=_to_int(
+                    _askl_constant_or_default("extra_trees.py", "max_leaf_nodes")
+                ),
+            ),
         },
-    }
+    )
 
 
 def _map_gradient_boosting(row: dict[str, Any]) -> dict[str, Any] | None:
-    learning_rate = _to_float(row.get("classifier:gradient_boosting:learning_rate"))
-    max_depth = _to_int(row.get("classifier:gradient_boosting:max_depth"))
-    min_samples_leaf = _to_int(row.get("classifier:gradient_boosting:min_samples_leaf"))
-    l2_regularization = _to_float(row.get("classifier:gradient_boosting:l2_regularization"))
-
-    if learning_rate is None or min_samples_leaf is None or l2_regularization is None:
-        return None
-
-    return {
-        "model_name": "hist_gradient_boosting",
-        "params": {
-            "learning_rate": learning_rate,
-            "max_iter": 200,
-            "max_depth": max_depth if max_depth is not None else 12,
-            "min_samples_leaf": min_samples_leaf,
-            "l2_regularization": l2_regularization,
+    return _project_to_current_model(
+        "gradient_boosting",
+        {
+            "n_estimators": _askl_get_max_iter("gradient_boosting.py"),
+            "learning_rate": _to_float(row.get("classifier:gradient_boosting:learning_rate")),
+            "max_depth": _to_int(row.get("classifier:gradient_boosting:max_depth")),
+            "subsample": _to_float(
+                row.get("classifier:gradient_boosting:subsample"),
+                default=_to_float(_askl_constant_or_default("gradient_boosting.py", "subsample")),
+            ),
+            "max_leaf_nodes": _to_int(
+                row.get("classifier:gradient_boosting:max_leaf_nodes"),
+                default=_to_int(_askl_constant_or_default("gradient_boosting.py", "max_leaf_nodes")),
+            ),
         },
-    }
+    )
 
 
 def _map_lda(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -179,13 +330,101 @@ def _map_lda(row: dict[str, Any]) -> dict[str, Any] | None:
         return None
 
     solver = "svd" if shrinkage is None else "lsqr"
-    return {
-        "model_name": "lda",
-        "params": {
+    return _project_to_current_model(
+        "lda",
+        {
             "solver": solver,
             "shrinkage": shrinkage,
         },
-    }
+    )
+
+
+def _map_multinomial_nb(row: dict[str, Any]) -> dict[str, Any] | None:
+    return _project_to_current_model(
+        "multinomial_nb",
+        {
+            "alpha": _to_float(row.get("classifier:multinomial_nb:alpha")),
+            "fit_prior": _to_bool(row.get("classifier:multinomial_nb:fit_prior"), default=True),
+        },
+    )
+
+
+def _map_mlp(row: dict[str, Any]) -> dict[str, Any] | None:
+    hidden_layer_depth = _to_int(row.get("classifier:mlp:hidden_layer_depth"), default=1)
+    num_nodes_per_layer = _to_int(row.get("classifier:mlp:num_nodes_per_layer"))
+    alpha = _to_float(row.get("classifier:mlp:alpha"))
+    learning_rate_init = _to_float(row.get("classifier:mlp:learning_rate_init"))
+    activation = _none_if_missing(row.get("classifier:mlp:activation")) or _askl_constant_or_default(
+        "mlp.py", "activation"
+    )
+    solver = _none_if_missing(row.get("classifier:mlp:solver")) or _askl_constant_or_default(
+        "mlp.py", "solver"
+    )
+
+    if num_nodes_per_layer is None:
+        return None
+
+    hidden_layer_sizes = int(num_nodes_per_layer)
+    if hidden_layer_depth is not None and hidden_layer_depth > 1:
+        hidden_layer_sizes = min(256, hidden_layer_sizes * hidden_layer_depth)
+
+    return _project_to_current_model(
+        "mlp",
+        {
+            "hidden_layer_sizes": hidden_layer_sizes,
+            "alpha": alpha,
+            "learning_rate_init": learning_rate_init,
+            "activation": activation,
+            "solver": solver,
+        },
+    )
+
+
+def _map_passive_aggressive(row: dict[str, Any]) -> dict[str, Any] | None:
+    return _project_to_current_model(
+        "passive_aggressive",
+        {
+            "C": _to_float(row.get("classifier:passive_aggressive:C")),
+            "loss": _none_if_missing(row.get("classifier:passive_aggressive:loss")) or "hinge",
+            "average": _to_bool(row.get("classifier:passive_aggressive:average"), default=False),
+        },
+    )
+
+
+def _map_qda(row: dict[str, Any]) -> dict[str, Any] | None:
+    return _project_to_current_model(
+        "qda",
+        {
+            "reg_param": _to_float(row.get("classifier:qda:reg_param"), default=0.0),
+        },
+    )
+
+
+def _map_sgd(row: dict[str, Any]) -> dict[str, Any] | None:
+    loss = _none_if_missing(row.get("classifier:sgd:loss")) or "log"
+    if loss == "log":
+        loss = "log_loss"
+    elif loss in {"squared_hinge", "perceptron"}:
+        loss = "hinge"
+
+    learning_rate = _none_if_missing(row.get("classifier:sgd:learning_rate")) or "optimal"
+    if learning_rate == "constant":
+        learning_rate = "adaptive"
+
+    return _project_to_current_model(
+        "sgd",
+        {
+            "loss": loss,
+            "penalty": _none_if_missing(row.get("classifier:sgd:penalty")) or "l2",
+            "alpha": _to_float(row.get("classifier:sgd:alpha")),
+            "learning_rate": learning_rate,
+            "eta0": _to_float(
+                row.get("classifier:sgd:eta0"),
+                default=_to_float(_askl_constant_or_default("sgd.py", "eta0")),
+            ),
+            "average": _to_bool(row.get("classifier:sgd:average"), default=False),
+        },
+    )
 
 
 def map_supported_configuration(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -197,10 +436,9 @@ def map_supported_configuration(row: dict[str, Any]) -> dict[str, Any] | None:
     mapped = mapper(row)
     if mapped is None:
         return None
-
-    params = mapped["params"]
-    if any(value is None for value in params.values()):
+    if any(value is None for value in mapped["params"].values()):
         return None
+
     return mapped
 
 
@@ -295,14 +533,14 @@ def convert_collection(source_dir: Path) -> dict[str, Any]:
             }
         )
 
+    exportable_models = set(get_classification_components())
+    mapped_models = {candidate["model_name"] for dataset in datasets for candidate in dataset["candidates"]}
     return {
         "source_collection": collection_name,
         "metric": metric,
         "task_descriptor": task_descriptor,
         "data_descriptor": data_descriptor,
-        "supported_models": sorted(
-            {candidate["model_name"] for dataset in datasets for candidate in dataset["candidates"]}
-        ),
+        "supported_models": sorted(exportable_models.intersection(mapped_models)),
         "datasets": datasets,
     }
 

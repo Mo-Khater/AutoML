@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Mapping
 
+import pandas as pd
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_X_y, check_array
 
@@ -19,7 +20,17 @@ class BaseAutoML(BaseEstimator, ABC):
         random_state: int | None = None,
         ensemble: bool = True,
         ensemble_size: int = 10,
+        ensemble_strategy: str = "stacked",
+        stacked_base_size: int = 4,
+        stacked_bagging_n_estimators: int = 5,
+        stacked_meta_model_names: list[str] | None = None,
+        stacked_include_base_predictions: bool = True,
+        stacked_include_original_features_in_meta: bool = True,
+        stacked_final_weight_optimizer: str = "greedy",
         n_jobs: int | None = None,
+        search_n_parallel: int = 3,
+        stack_n_jobs: int | None = None,
+        inner_n_jobs: int | None = 1,
         verbose: int = 1,
     ) -> None:
         self.time_budget = time_budget
@@ -30,7 +41,17 @@ class BaseAutoML(BaseEstimator, ABC):
         self.random_state = random_state
         self.ensemble = ensemble
         self.ensemble_size = ensemble_size
+        self.ensemble_strategy = ensemble_strategy
+        self.stacked_base_size = stacked_base_size
+        self.stacked_bagging_n_estimators = stacked_bagging_n_estimators
+        self.stacked_meta_model_names = stacked_meta_model_names
+        self.stacked_include_base_predictions = stacked_include_base_predictions
+        self.stacked_include_original_features_in_meta = stacked_include_original_features_in_meta
+        self.stacked_final_weight_optimizer = stacked_final_weight_optimizer
         self.n_jobs = n_jobs
+        self.search_n_parallel = search_n_parallel
+        self.stack_n_jobs = stack_n_jobs
+        self.inner_n_jobs = inner_n_jobs
         self.verbose = verbose
 
         self._reset()
@@ -63,10 +84,21 @@ class BaseAutoML(BaseEstimator, ABC):
         return self._default_scoring()
 
     def _validate_fit_inputs(self, X: Any, y: Any) -> tuple[Any, Any]:
+        if isinstance(X, pd.DataFrame):
+            y_valid = y.copy() if hasattr(y, "copy") else y
+            if hasattr(y_valid, "to_numpy"):
+                if len(X) != len(y_valid):
+                    raise ValueError("X and y have inconsistent lengths.")
+            else:
+                if len(X) != len(y):
+                    raise ValueError("X and y have inconsistent lengths.")
+            return X.copy(), y_valid
         X_valid, y_valid = check_X_y(X, y, accept_sparse=True)
         return X_valid, y_valid
 
     def _validate_predict_input(self, X: Any) -> Any:
+        if isinstance(X, pd.DataFrame):
+            return X.copy()
         return check_array(X, accept_sparse=True)
 
     def _run_engine(self, X: Any, y: Any) -> Any:

@@ -1,2 +1,5 @@
 .venv/
 __pycache__/
+AutogluonModels/
+data/
+autogluon_runs/

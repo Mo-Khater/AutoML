@@ -9,6 +9,8 @@ from ConfigSpace.hyperparameters import (
     UniformFloatHyperparameter,
     UniformIntegerHyperparameter,
 )
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import (
@@ -18,11 +20,16 @@ from sklearn.ensemble import (
     HistGradientBoostingClassifier,
     RandomForestClassifier,
 )
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
 from sklearn.linear_model import LogisticRegression, PassiveAggressiveClassifier, SGDClassifier
+from sklearn.linear_model import RidgeClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
+from xgboost import XGBClassifier
 
 
 @dataclass(frozen=True)
@@ -268,6 +275,117 @@ def _build_gradient_boosting(params: dict[str, Any], random_state: int | None, n
         max_leaf_nodes=int(params["max_leaf_nodes"]),
         random_state=random_state,
     )
+
+
+def _lightgbm_hyperparameters() -> list[Any]:
+    return [
+        UniformIntegerHyperparameter("lightgbm:n_estimators", lower=100, upper=1200),
+        UniformFloatHyperparameter("lightgbm:learning_rate", lower=1e-3, upper=0.3, log=True),
+        UniformIntegerHyperparameter("lightgbm:num_leaves", lower=15, upper=255),
+        UniformIntegerHyperparameter("lightgbm:max_depth", lower=-1, upper=16),
+        UniformIntegerHyperparameter("lightgbm:min_child_samples", lower=5, upper=100),
+        UniformFloatHyperparameter("lightgbm:subsample", lower=0.5, upper=1.0),
+        UniformFloatHyperparameter("lightgbm:colsample_bytree", lower=0.5, upper=1.0),
+        UniformFloatHyperparameter("lightgbm:reg_alpha", lower=1e-8, upper=10.0, log=True),
+        UniformFloatHyperparameter("lightgbm:reg_lambda", lower=1e-8, upper=10.0, log=True),
+    ]
+
+
+def _lightgbm_conditions(ctx: dict[str, Any]) -> list[Any]:
+    return _all_equal_conditions(ctx["model_name"], "lightgbm", ctx["params"])
+
+
+def _build_lightgbm(params: dict[str, Any], random_state: int | None, n_jobs: int | None, balance_classes: bool):
+    estimator_params = {
+        "n_estimators": int(params["n_estimators"]),
+        "learning_rate": float(params["learning_rate"]),
+        "num_leaves": int(params["num_leaves"]),
+        "max_depth": int(params["max_depth"]),
+        "min_child_samples": int(params["min_child_samples"]),
+        "subsample": float(params["subsample"]),
+        "colsample_bytree": float(params["colsample_bytree"]),
+        "reg_alpha": float(params["reg_alpha"]),
+        "reg_lambda": float(params["reg_lambda"]),
+        "random_state": random_state,
+        "n_jobs": n_jobs,
+        "verbosity": -1,
+    }
+    if balance_classes:
+        estimator_params["class_weight"] = "balanced"
+    return LGBMClassifier(**estimator_params)
+
+
+def _xgboost_hyperparameters() -> list[Any]:
+    return [
+        UniformIntegerHyperparameter("xgboost:n_estimators", lower=100, upper=1200),
+        UniformFloatHyperparameter("xgboost:learning_rate", lower=1e-3, upper=0.3, log=True),
+        UniformIntegerHyperparameter("xgboost:max_depth", lower=2, upper=12),
+        UniformFloatHyperparameter("xgboost:min_child_weight", lower=1e-2, upper=32.0, log=True),
+        UniformFloatHyperparameter("xgboost:subsample", lower=0.5, upper=1.0),
+        UniformFloatHyperparameter("xgboost:colsample_bytree", lower=0.5, upper=1.0),
+        UniformFloatHyperparameter("xgboost:reg_alpha", lower=1e-8, upper=10.0, log=True),
+        UniformFloatHyperparameter("xgboost:reg_lambda", lower=1e-8, upper=10.0, log=True),
+        UniformFloatHyperparameter("xgboost:gamma", lower=1e-8, upper=10.0, log=True),
+    ]
+
+
+def _xgboost_conditions(ctx: dict[str, Any]) -> list[Any]:
+    return _all_equal_conditions(ctx["model_name"], "xgboost", ctx["params"])
+
+
+def _build_xgboost(params: dict[str, Any], random_state: int | None, n_jobs: int | None, balance_classes: bool):
+    estimator_params = {
+        "n_estimators": int(params["n_estimators"]),
+        "learning_rate": float(params["learning_rate"]),
+        "max_depth": int(params["max_depth"]),
+        "min_child_weight": float(params["min_child_weight"]),
+        "subsample": float(params["subsample"]),
+        "colsample_bytree": float(params["colsample_bytree"]),
+        "reg_alpha": float(params["reg_alpha"]),
+        "reg_lambda": float(params["reg_lambda"]),
+        "gamma": float(params["gamma"]),
+        "random_state": random_state,
+        "n_jobs": n_jobs,
+        "verbosity": 0,
+        "eval_metric": "logloss",
+    }
+    if balance_classes:
+        estimator_params["scale_pos_weight"] = 1.0
+    return XGBClassifier(**estimator_params)
+
+
+def _catboost_hyperparameters() -> list[Any]:
+    return [
+        UniformIntegerHyperparameter("catboost:iterations", lower=100, upper=1200),
+        UniformFloatHyperparameter("catboost:learning_rate", lower=1e-3, upper=0.3, log=True),
+        UniformIntegerHyperparameter("catboost:depth", lower=4, upper=10),
+        UniformFloatHyperparameter("catboost:l2_leaf_reg", lower=1e-3, upper=30.0, log=True),
+        UniformFloatHyperparameter("catboost:random_strength", lower=1e-3, upper=10.0, log=True),
+        UniformFloatHyperparameter("catboost:bagging_temperature", lower=0.0, upper=10.0),
+    ]
+
+
+def _catboost_conditions(ctx: dict[str, Any]) -> list[Any]:
+    return _all_equal_conditions(ctx["model_name"], "catboost", ctx["params"])
+
+
+def _build_catboost(params: dict[str, Any], random_state: int | None, n_jobs: int | None, balance_classes: bool):
+    estimator_params = {
+        "iterations": int(params["iterations"]),
+        "learning_rate": float(params["learning_rate"]),
+        "depth": int(params["depth"]),
+        "l2_leaf_reg": float(params["l2_leaf_reg"]),
+        "random_strength": float(params["random_strength"]),
+        "bagging_temperature": float(params["bagging_temperature"]),
+        "random_seed": random_state,
+        "verbose": False,
+        "allow_writing_files": False,
+    }
+    if n_jobs is not None:
+        estimator_params["thread_count"] = int(n_jobs)
+    if balance_classes:
+        estimator_params["auto_class_weights"] = "Balanced"
+    return CatBoostClassifier(**estimator_params)
 
 
 def _hist_gradient_boosting_hyperparameters() -> list[Any]:
@@ -527,9 +645,82 @@ def _build_multinomial_nb(params: dict[str, Any], random_state: int | None, n_jo
     )
 
 
+def _mlp_hyperparameters() -> list[Any]:
+    return [
+        UniformIntegerHyperparameter("mlp:hidden_layer_sizes", lower=32, upper=256),
+        UniformFloatHyperparameter("mlp:alpha", lower=1e-6, upper=1e-1, log=True),
+        UniformFloatHyperparameter("mlp:learning_rate_init", lower=1e-4, upper=1e-1, log=True),
+        CategoricalHyperparameter("mlp:activation", choices=["relu", "tanh", "logistic"]),
+        CategoricalHyperparameter("mlp:solver", choices=["adam", "sgd"]),
+    ]
+
+
+def _mlp_conditions(ctx: dict[str, Any]) -> list[Any]:
+    return _all_equal_conditions(ctx["model_name"], "mlp", ctx["params"])
+
+
+def _build_mlp(params: dict[str, Any], random_state: int | None, n_jobs: int | None, balance_classes: bool):
+    return MLPClassifier(
+        hidden_layer_sizes=(int(params["hidden_layer_sizes"]),),
+        alpha=float(params["alpha"]),
+        learning_rate_init=float(params["learning_rate_init"]),
+        activation=params["activation"],
+        solver=params["solver"],
+        max_iter=400,
+        early_stopping=True,
+        random_state=random_state,
+    )
+
+
+def _gaussian_process_hyperparameters() -> list[Any]:
+    return [
+        UniformFloatHyperparameter("gaussian_process:length_scale", lower=1e-2, upper=1e2, log=True),
+        UniformIntegerHyperparameter("gaussian_process:max_iter_predict", lower=20, upper=200),
+    ]
+
+
+def _gaussian_process_conditions(ctx: dict[str, Any]) -> list[Any]:
+    return _all_equal_conditions(ctx["model_name"], "gaussian_process", ctx["params"])
+
+
+def _build_gaussian_process(params: dict[str, Any], random_state: int | None, n_jobs: int | None, balance_classes: bool):
+    return GaussianProcessClassifier(
+        kernel=1.0 * RBF(length_scale=float(params["length_scale"])),
+        max_iter_predict=int(params["max_iter_predict"]),
+        random_state=random_state,
+    )
+
+
+def _ridge_classifier_hyperparameters() -> list[Any]:
+    return [
+        UniformFloatHyperparameter("ridge_classifier:alpha", lower=1e-4, upper=1e3, log=True),
+        CategoricalHyperparameter("ridge_classifier:class_weight", choices=["none", "balanced"]),
+        CategoricalHyperparameter("ridge_classifier:solver", choices=["auto", "svd", "cholesky", "lsqr", "sag"]),
+    ]
+
+
+def _ridge_classifier_conditions(ctx: dict[str, Any]) -> list[Any]:
+    return _all_equal_conditions(ctx["model_name"], "ridge_classifier", ctx["params"])
+
+
+def _build_ridge_classifier(params: dict[str, Any], random_state: int | None, n_jobs: int | None, balance_classes: bool):
+    estimator_params = {
+        "alpha": float(params["alpha"]),
+        "solver": params["solver"],
+        "random_state": random_state,
+    }
+    class_weight = params.get("class_weight", "none")
+    if balance_classes:
+        estimator_params["class_weight"] = "balanced"
+    elif class_weight != "none":
+        estimator_params["class_weight"] = class_weight
+    return RidgeClassifier(**estimator_params)
+
+
 CLASSIFICATION_COMPONENTS: dict[str, ClassificationComponent] = {
     "adaboost": ClassificationComponent("adaboost", _adaboost_hyperparameters, _adaboost_conditions, _build_adaboost),
     "bernoulli_nb": ClassificationComponent("bernoulli_nb", _bernoulli_nb_hyperparameters, _bernoulli_nb_conditions, _build_bernoulli_nb),
+    "catboost": ClassificationComponent("catboost", _catboost_hyperparameters, _catboost_conditions, _build_catboost),
     "decision_tree": ClassificationComponent("decision_tree", _decision_tree_hyperparameters, _decision_tree_conditions, _build_decision_tree),
     "extra_trees": ClassificationComponent("extra_trees", _extra_trees_hyperparameters, _extra_trees_conditions, _build_extra_trees),
     "gaussian_nb": ClassificationComponent("gaussian_nb", _gaussian_nb_hyperparameters, _gaussian_nb_conditions, _build_gaussian_nb),
@@ -537,14 +728,19 @@ CLASSIFICATION_COMPONENTS: dict[str, ClassificationComponent] = {
     "hist_gradient_boosting": ClassificationComponent("hist_gradient_boosting", _hist_gradient_boosting_hyperparameters, _hist_gradient_boosting_conditions, _build_hist_gradient_boosting),
     "knn": ClassificationComponent("knn", _knn_hyperparameters, _knn_conditions, _build_knn),
     "lda": ClassificationComponent("lda", _lda_hyperparameters, _lda_conditions, _build_lda),
+    "lightgbm": ClassificationComponent("lightgbm", _lightgbm_hyperparameters, _lightgbm_conditions, _build_lightgbm),
     "liblinear_svc": ClassificationComponent("liblinear_svc", _liblinear_svc_hyperparameters, _liblinear_svc_conditions, _build_liblinear_svc),
     "logistic_regression": ClassificationComponent("logistic_regression", _logistic_regression_hyperparameters, _logistic_regression_conditions, _build_logistic_regression),
     "multinomial_nb": ClassificationComponent("multinomial_nb", _multinomial_nb_hyperparameters, _multinomial_nb_conditions, _build_multinomial_nb),
+    "mlp": ClassificationComponent("mlp", _mlp_hyperparameters, _mlp_conditions, _build_mlp),
     "passive_aggressive": ClassificationComponent("passive_aggressive", _passive_aggressive_hyperparameters, _passive_aggressive_conditions, _build_passive_aggressive),
     "qda": ClassificationComponent("qda", _qda_hyperparameters, _qda_conditions, _build_qda),
+    "gaussian_process": ClassificationComponent("gaussian_process", _gaussian_process_hyperparameters, _gaussian_process_conditions, _build_gaussian_process),
     "random_forest": ClassificationComponent("random_forest", _random_forest_hyperparameters, _random_forest_conditions, _build_random_forest),
+    "ridge_classifier": ClassificationComponent("ridge_classifier", _ridge_classifier_hyperparameters, _ridge_classifier_conditions, _build_ridge_classifier),
     "sgd": ClassificationComponent("sgd", _sgd_hyperparameters, _sgd_conditions, _build_sgd),
     "svc": ClassificationComponent("svc", _svc_hyperparameters, _svc_conditions, _build_svc),
+    "xgboost": ClassificationComponent("xgboost", _xgboost_hyperparameters, _xgboost_conditions, _build_xgboost),
 }
 
 
