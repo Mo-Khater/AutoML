@@ -23,7 +23,7 @@ def load_dataset_split(dataset_dir: Path) -> tuple[pd.DataFrame, pd.Series, pd.D
 
 
 def choose_runtime_settings(_: int) -> dict[str, int]:
-    return {"time_budget": 1500, "n_trials": 10}
+    return {"time_budget": 1500, "n_trials": 100}
 
 
 def save_result(result: dict[str, object]) -> None:

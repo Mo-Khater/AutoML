@@ -13,7 +13,7 @@ from ..configspace_search_space import (
     configuration_to_dict,
     get_classification_configspace,
 )
-from ..evaluation import ClassificationEvaluator
+from ..evaluation import ClassificationEvaluator, FidelitySpec
 from ..meta_learning import (
     compute_basic_classification_metafeatures,
     get_meta_learning_warmstarts,
@@ -48,6 +48,11 @@ class _BaseCandidate:
 
 class AutoMLEngine:
     _STACK_SELECTION_SAMPLE_SIZE = 300
+    _DEFAULT_FIDELITY_STAGES = (
+        FidelitySpec(stage=0, sample_fraction=0.2, cv_folds=2, model_budget=0.25),
+        FidelitySpec(stage=1, sample_fraction=0.5, cv_folds=3, model_budget=0.6),
+        FidelitySpec(stage=2, sample_fraction=1.0, cv_folds=None, model_budget=1.0),
+    )
 
     def __init__(
         self,
@@ -198,6 +203,7 @@ class AutoMLEngine:
             initial_configurations=initial_configurations,
             n_parallel=self.search_n_parallel,
             verbose=self.verbose,
+            fidelity_stages=list(self._DEFAULT_FIDELITY_STAGES),
         )
 
     def _fit_final_model(
