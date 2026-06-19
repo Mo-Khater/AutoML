@@ -47,6 +47,20 @@ def _all_equal_conditions(model_name_hyperparameter: Any, component_name: str, p
     ]
 
 
+def _set_optional_class_weight(
+    estimator_params: dict[str, Any],
+    params: dict[str, Any],
+    *,
+    balance_classes: bool,
+    key: str = "class_weight",
+) -> None:
+    class_weight = params.get(key, "none")
+    if balance_classes:
+        estimator_params[key] = "balanced"
+    elif class_weight != "none":
+        estimator_params[key] = class_weight
+
+
 def _logistic_regression_hyperparameters() -> list[Any]:
     return [
         UniformFloatHyperparameter("logistic_regression:C", lower=1e-4, upper=1e4, log=True),
@@ -90,11 +104,7 @@ def _build_logistic_regression(params: dict[str, Any], random_state: int | None,
         "max_iter": int(params["max_iter"]),
         "random_state": random_state,
     }
-    class_weight = params.get("class_weight", "none")
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
-    elif class_weight != "none":
-        estimator_params["class_weight"] = class_weight
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     if estimator_params["solver"] == "lbfgs":
         estimator_params["penalty"] = "l2"
     return LogisticRegression(**estimator_params)
@@ -131,11 +141,7 @@ def _build_random_forest(params: dict[str, Any], random_state: int | None, n_job
         "random_state": random_state,
         "n_jobs": n_jobs,
     }
-    class_weight = params.get("class_weight", "none")
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
-    elif class_weight != "none":
-        estimator_params["class_weight"] = class_weight
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     return RandomForestClassifier(**estimator_params)
 
 
@@ -168,11 +174,7 @@ def _build_extra_trees(params: dict[str, Any], random_state: int | None, n_jobs:
         "random_state": random_state,
         "n_jobs": n_jobs,
     }
-    class_weight = params.get("class_weight", "none")
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
-    elif class_weight != "none":
-        estimator_params["class_weight"] = class_weight
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     return ExtraTreesClassifier(**estimator_params)
 
 
@@ -220,11 +222,7 @@ def _build_svc(params: dict[str, Any], random_state: int | None, n_jobs: int | N
         "probability": True,
         "random_state": random_state,
     }
-    class_weight = params.get("class_weight", "none")
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
-    elif class_weight != "none":
-        estimator_params["class_weight"] = class_weight
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     return SVC(**estimator_params)
 
 
@@ -288,6 +286,7 @@ def _lightgbm_hyperparameters() -> list[Any]:
         UniformFloatHyperparameter("lightgbm:colsample_bytree", lower=0.5, upper=1.0),
         UniformFloatHyperparameter("lightgbm:reg_alpha", lower=1e-8, upper=10.0, log=True),
         UniformFloatHyperparameter("lightgbm:reg_lambda", lower=1e-8, upper=10.0, log=True),
+        CategoricalHyperparameter("lightgbm:class_weight", choices=["none", "balanced"]),
     ]
 
 
@@ -310,8 +309,7 @@ def _build_lightgbm(params: dict[str, Any], random_state: int | None, n_jobs: in
         "n_jobs": n_jobs,
         "verbosity": -1,
     }
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     return LGBMClassifier(**estimator_params)
 
 
@@ -362,6 +360,7 @@ def _catboost_hyperparameters() -> list[Any]:
         UniformFloatHyperparameter("catboost:l2_leaf_reg", lower=1e-3, upper=30.0, log=True),
         UniformFloatHyperparameter("catboost:random_strength", lower=1e-3, upper=10.0, log=True),
         UniformFloatHyperparameter("catboost:bagging_temperature", lower=0.0, upper=10.0),
+        CategoricalHyperparameter("catboost:auto_class_weights", choices=["none", "Balanced"]),
     ]
 
 
@@ -383,8 +382,11 @@ def _build_catboost(params: dict[str, Any], random_state: int | None, n_jobs: in
     }
     if n_jobs is not None:
         estimator_params["thread_count"] = int(n_jobs)
+    auto_class_weights = params.get("auto_class_weights", "none")
     if balance_classes:
         estimator_params["auto_class_weights"] = "Balanced"
+    elif auto_class_weights != "none":
+        estimator_params["auto_class_weights"] = auto_class_weights
     return CatBoostClassifier(**estimator_params)
 
 
@@ -505,11 +507,7 @@ def _build_decision_tree(params: dict[str, Any], random_state: int | None, n_job
         "max_features": params.get("max_features"),
         "random_state": random_state,
     }
-    class_weight = params.get("class_weight", "none")
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
-    elif class_weight != "none":
-        estimator_params["class_weight"] = class_weight
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     return DecisionTreeClassifier(**estimator_params)
 
 
@@ -539,11 +537,7 @@ def _build_sgd(params: dict[str, Any], random_state: int | None, n_jobs: int | N
         "average": bool(params["average"]),
         "random_state": random_state,
     }
-    class_weight = params.get("class_weight", "none")
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
-    elif class_weight != "none":
-        estimator_params["class_weight"] = class_weight
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     return SGDClassifier(**estimator_params)
 
 
@@ -552,6 +546,7 @@ def _passive_aggressive_hyperparameters() -> list[Any]:
         UniformFloatHyperparameter("passive_aggressive:C", lower=1e-4, upper=10.0, log=True),
         CategoricalHyperparameter("passive_aggressive:loss", choices=["hinge", "squared_hinge"]),
         CategoricalHyperparameter("passive_aggressive:average", choices=[False, True]),
+        CategoricalHyperparameter("passive_aggressive:class_weight", choices=["none", "balanced"]),
     ]
 
 
@@ -560,13 +555,14 @@ def _passive_aggressive_conditions(ctx: dict[str, Any]) -> list[Any]:
 
 
 def _build_passive_aggressive(params: dict[str, Any], random_state: int | None, n_jobs: int | None, balance_classes: bool):
-    return PassiveAggressiveClassifier(
-        C=float(params["C"]),
-        loss=params["loss"],
-        average=bool(params["average"]),
-        random_state=random_state,
-        class_weight="balanced" if balance_classes else None,
-    )
+    estimator_params = {
+        "C": float(params["C"]),
+        "loss": params["loss"],
+        "average": bool(params["average"]),
+        "random_state": random_state,
+    }
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
+    return PassiveAggressiveClassifier(**estimator_params)
 
 
 def _qda_hyperparameters() -> list[Any]:
@@ -601,11 +597,7 @@ def _build_liblinear_svc(params: dict[str, Any], random_state: int | None, n_job
         "loss": params["loss"],
         "random_state": random_state,
     }
-    class_weight = params.get("class_weight", "none")
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
-    elif class_weight != "none":
-        estimator_params["class_weight"] = class_weight
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     return LinearSVC(**estimator_params)
 
 
@@ -709,11 +701,7 @@ def _build_ridge_classifier(params: dict[str, Any], random_state: int | None, n_
         "solver": params["solver"],
         "random_state": random_state,
     }
-    class_weight = params.get("class_weight", "none")
-    if balance_classes:
-        estimator_params["class_weight"] = "balanced"
-    elif class_weight != "none":
-        estimator_params["class_weight"] = class_weight
+    _set_optional_class_weight(estimator_params, params, balance_classes=balance_classes)
     return RidgeClassifier(**estimator_params)
 
 

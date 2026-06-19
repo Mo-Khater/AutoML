@@ -25,14 +25,16 @@ class BaseAutoML(BaseEstimator, ABC):
         stacked_bagging_n_estimators: int = 5,
         stacked_meta_model_names: list[str] | None = None,
         stacked_include_base_predictions: bool = True,
-        stacked_include_original_features_in_meta: bool = True,
+        stacked_include_original_features_in_meta: bool = False,
         stacked_final_weight_optimizer: str = "greedy",
         n_jobs: int | None = None,
         search_n_parallel: int = 3,
         stack_n_jobs: int | None = None,
         inner_n_jobs: int | None = 1,
         verbose: int = 1,
+        disable_evaluation_timeout: bool = False,
     ) -> None:
+        
         self.time_budget = time_budget
         self.per_run_time_limit = per_run_time_limit
         self.n_trials = n_trials
@@ -53,6 +55,7 @@ class BaseAutoML(BaseEstimator, ABC):
         self.stack_n_jobs = stack_n_jobs
         self.inner_n_jobs = inner_n_jobs
         self.verbose = verbose
+        self.disable_evaluation_timeout = disable_evaluation_timeout
 
         self._reset()
 

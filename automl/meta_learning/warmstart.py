@@ -11,6 +11,7 @@ from ..configspace_search_space import dict_to_configuration
 
 def get_meta_learning_warmstarts(
     *,
+    task: str = "classification",
     y: Any,
     metafeatures: dict[str, float],
     configspace: Any,
@@ -22,6 +23,7 @@ def get_meta_learning_warmstarts(
     max_warmstarts: int = 10,
 ) -> list[Any]:
     collection_path = _resolve_collection_path(
+        task=task,
         y=y,
         scoring=scoring,
         meta_learning_root=meta_learning_root,
@@ -80,6 +82,7 @@ def get_meta_learning_warmstarts(
 
 def _resolve_collection_path(
     *,
+    task: str,
     y: Any,
     scoring: str,
     meta_learning_root: str | Path | None,
@@ -88,22 +91,28 @@ def _resolve_collection_path(
         root = Path(meta_learning_root)
     else:
         root = Path(__file__).resolve().parents[2] / "meta_learning" / "json"
-    n_classes = len(np.unique(np.asarray(y)))
-    task_suffix = "binary" if n_classes <= 2 else "multiclass"
-
-    metric_name = "accuracy"
-    if scoring not in {None, "accuracy"}:
-        metric_name = scoring
-
-    candidate_names = [
-        f"{metric_name}_{task_suffix}.classification_dense.json",
-        f"{metric_name}.classification_dense.json",
-    ]
+    candidate_names = _candidate_collection_names(task=task, y=y, scoring=scoring)
     for name in candidate_names:
         path = root / name
         if path.exists():
             return path
     return None
+
+
+def _candidate_collection_names(*, task: str, y: Any, scoring: str) -> list[str]:
+    metric_name = scoring or ("accuracy" if task == "classification" else "r2")
+    if task == "classification":
+        n_classes = len(np.unique(np.asarray(y)))
+        task_suffix = "binary" if n_classes <= 2 else "multiclass"
+        return [
+            f"{metric_name}_{task_suffix}.classification_dense.json",
+            f"{metric_name}.classification_dense.json",
+        ]
+    if task == "regression":
+        return [
+            f"{metric_name}_regression_dense.json",
+        ]
+    return []
 
 
 def _metafeature_distance(

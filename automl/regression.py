@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import r2_score
 
 from .base import BaseAutoML
 
 
-class AutoMLClassifier(BaseAutoML):
+class AutoMLRegressor(BaseAutoML):
     def __init__(
         self,
         *,
@@ -33,7 +33,6 @@ class AutoMLClassifier(BaseAutoML):
         inner_n_jobs: int | None = 1,
         verbose: int = 1,
         disable_evaluation_timeout: bool = False,
-        balance_classes: bool = False,
         allowed_models: list[str] | None = None,
         use_meta_learning: bool = True,
         meta_learning_root: str | None = None,
@@ -64,7 +63,6 @@ class AutoMLClassifier(BaseAutoML):
             verbose=verbose,
             disable_evaluation_timeout=disable_evaluation_timeout,
         )
-        self.balance_classes = balance_classes
         self.allowed_models = allowed_models
         self.use_meta_learning = use_meta_learning
         self.meta_learning_root = meta_learning_root
@@ -73,17 +71,17 @@ class AutoMLClassifier(BaseAutoML):
         self.max_meta_learning_warmstarts = max_meta_learning_warmstarts
 
     def _task_name(self) -> str:
-        return "classification"
+        return "regression"
 
     def _default_scoring(self) -> str | None:
-        return "accuracy"
+        return "r2"
 
     def _build_engine(self):
         try:
             from .core.automl import AutoMLEngine
         except ImportError as exc:
             raise RuntimeError(
-                "AutoMLClassifier requires `automl.core.automl.AutoMLEngine`, "
+                "AutoMLRegressor requires `automl.core.automl.AutoMLEngine`, "
                 "but that module has not been implemented yet."
             ) from exc
 
@@ -110,7 +108,6 @@ class AutoMLClassifier(BaseAutoML):
             inner_n_jobs=self.inner_n_jobs,
             verbose=self.verbose,
             disable_evaluation_timeout=self.disable_evaluation_timeout,
-            balance_classes=self.balance_classes,
             allowed_models=self.allowed_models,
             use_meta_learning=self.use_meta_learning,
             meta_learning_root=self.meta_learning_root,
@@ -120,11 +117,9 @@ class AutoMLClassifier(BaseAutoML):
         )
 
     def fit(self, X: Any, y: Any):
-        y_array = np.asarray(y)
-        self.classes_ = np.unique(y_array)
-        self.n_classes_ = int(self.classes_.shape[0])
+        self.n_outputs_ = 1 if np.asarray(y).ndim == 1 else int(np.asarray(y).shape[1])
         return super().fit(X, y)
 
     def score(self, X: Any, y: Any) -> float:
         predictions = self.predict(X)
-        return float(accuracy_score(y, predictions))
+        return float(r2_score(y, predictions))

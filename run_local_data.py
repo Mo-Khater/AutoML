@@ -140,7 +140,7 @@ def run_autogluon(
 
 def main() -> None:
     # custom_datasets = ['heart','PurchaseStatus', 'student_report', 'titanic_preprocessing']
-    custom_datasets = ['PurchaseStatus', 'student_report', 'titanic_preprocessing']
+    custom_datasets = ['titanic_preprocessing']
     # custom_datasets = ['heart']
     # custom_datasets = ['datascienceproject']
 
@@ -152,7 +152,7 @@ def main() -> None:
             print(f"######## {dataset} ########")
             X_train, y_train, X_val, y_val = load_dataset_split(dataset_dir)
             run_custom_automl(dataset, X_train, y_train, X_val, y_val)
-            run_autogluon(dataset, X_train, y_train, X_val, y_val)
+            # run_autogluon(dataset, X_train, y_train, X_val, y_val)
 
 
 if __name__ == "__main__":

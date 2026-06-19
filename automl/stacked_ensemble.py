@@ -6,10 +6,8 @@ from typing import Any
 import numpy as np
 from joblib import Parallel, delayed
 from scipy import sparse
-from scipy.optimize import minimize
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.ensemble import BaggingClassifier
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
@@ -21,7 +19,7 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit, cross_val_predict
+from sklearn.model_selection import StratifiedKFold, cross_val_predict
 
 
 def _softmax(logits: np.ndarray) -> np.ndarray:
@@ -64,15 +62,12 @@ class ProbabilityAdapterClassifier(BaseEstimator, ClassifierMixin):
 
 
 @dataclass
-class EnsembleSelectionResult:
-    candidate_names: list[str]
-    weights: np.ndarray
+class ForwardSelectionResult:
+    selected_names: list[str]
     score: float
 
 
 class StackedEnsembleClassifier(BaseEstimator, ClassifierMixin):
-    _WEIGHT_OPTIMIZATION_SAMPLE_SIZE = 300
-
     def __init__(
         self,
         *,
@@ -89,6 +84,8 @@ class StackedEnsembleClassifier(BaseEstimator, ClassifierMixin):
         final_weight_optimizer: str = "greedy",
         scoring: str = "accuracy",
         verbose: int = 0,
+        min_base_models: int = 3,
+        selection_tolerance: float = 1e-4,
     ) -> None:
         self.base_estimators = base_estimators
         self.meta_estimators = meta_estimators
@@ -103,6 +100,8 @@ class StackedEnsembleClassifier(BaseEstimator, ClassifierMixin):
         self.final_weight_optimizer = final_weight_optimizer
         self.scoring = scoring
         self.verbose = verbose
+        self.min_base_models = max(1, int(min_base_models))
+        self.selection_tolerance = float(selection_tolerance)
 
     def fit(self, X: Any, y: Any):
         self.classes_ = np.unique(y)
@@ -112,64 +111,42 @@ class StackedEnsembleClassifier(BaseEstimator, ClassifierMixin):
             random_state=self.random_state,
         )
 
-        self.base_models_: list[tuple[str, Any]] = []
-        base_oof_predictions: list[np.ndarray] = []
-        base_feature_blocks: list[np.ndarray] = []
-        self.base_model_names_: list[str] = []
-
         base_results = Parallel(n_jobs=self.n_jobs)(
             delayed(self._fit_base_model)(base_name, base_estimator, X, y, splitter)
             for base_name, base_estimator in self.base_estimators
         )
-        for base_name, fitted_bagged_model, oof_proba in base_results:
-            self.base_models_.append((base_name, fitted_bagged_model))
-            self.base_model_names_.append(base_name)
-            base_oof_predictions.append(np.asarray(oof_proba, dtype=float))
-            base_feature_blocks.append(self._stack_features_from_proba(oof_proba))
-
-        if not base_feature_blocks:
+        if not base_results:
             raise RuntimeError("At least one base estimator is required to fit the stacked ensemble.")
 
+        self.forward_selection_ = self._forward_select_base_models(X, np.asarray(y), base_results)
+        selected_names = set(self.forward_selection_.selected_names)
+        selected_results = [
+            (base_name, fitted_model, oof_proba)
+            for base_name, fitted_model, oof_proba in base_results
+            if base_name in selected_names
+        ]
+        if len(selected_results) < self.min_base_models:
+            raise RuntimeError("Forward selection did not produce the minimum number of base models.")
+
+        self.base_models_ = [(base_name, fitted_model) for base_name, fitted_model, _ in selected_results]
+        self.base_model_names_ = [base_name for base_name, _, _ in selected_results]
+        base_feature_blocks = [
+            self._stack_features_from_proba(oof_proba)
+            for _, _, oof_proba in selected_results
+        ]
         stack_train_X = self._combine_meta_features(X, base_feature_blocks)
 
-        self.meta_models_: list[tuple[str, Any]] = []
-        meta_oof_predictions: list[np.ndarray] = []
-        self.meta_model_names_: list[str] = []
+        meta_name, meta_estimator = self._resolve_meta_estimator()
+        self.meta_model_name_ = meta_name
+        self.meta_model_ = ProbabilityAdapterClassifier(meta_estimator)
+        self.meta_model_.fit(stack_train_X, y)
 
-        meta_results = Parallel(n_jobs=self.n_jobs)(
-            delayed(self._fit_meta_model)(meta_name, meta_estimator, stack_train_X, y, splitter)
-            for meta_name, meta_estimator in self.meta_estimators
-        )
-        for meta_name, fitted_meta, meta_oof_proba in meta_results:
-            self.meta_models_.append((meta_name, fitted_meta))
-            self.meta_model_names_.append(meta_name)
-            meta_oof_predictions.append(np.asarray(meta_oof_proba, dtype=float))
-
-        ensemble_candidates: list[tuple[str, np.ndarray]] = list(
-            zip(self.meta_model_names_, meta_oof_predictions)
-        )
-        if self.include_base_predictions_in_final_ensemble:
-            ensemble_candidates.extend(zip(self.base_model_names_, base_oof_predictions))
-
-        if not ensemble_candidates:
-            raise RuntimeError("No ensemble candidates were produced for the final weighted ensemble.")
-
-        self.ensemble_selection_ = self._fit_constrained_weighted_ensemble(
-            y=np.asarray(y),
-            candidate_predictions=ensemble_candidates,
-        )
         self._log_ensemble_structure()
         return self
 
     def predict_proba(self, X: Any) -> np.ndarray:
         stack_features = self._build_stack_features(X)
-        candidate_predictions = self._predict_ensemble_candidates(X, stack_features)
-        final_proba = np.zeros_like(candidate_predictions[0][1], dtype=float)
-        for candidate_name, proba in candidate_predictions:
-            weight = self._weight_for_candidate(candidate_name)
-            if weight > 0:
-                final_proba += weight * proba
-        return final_proba
+        return np.asarray(self.meta_model_.predict_proba(stack_features), dtype=float)
 
     def predict(self, X: Any):
         proba = self.predict_proba(X)
@@ -197,27 +174,93 @@ class StackedEnsembleClassifier(BaseEstimator, ClassifierMixin):
         fitted_bagged_model.fit(X, y)
         return base_name, fitted_bagged_model, np.asarray(oof_proba, dtype=float)
 
-    def _fit_meta_model(
+    def _forward_select_base_models(
         self,
-        meta_name: str,
-        meta_estimator: Any,
-        stack_train_X: Any,
-        y: Any,
-        splitter: StratifiedKFold,
-    ) -> tuple[str, Any, np.ndarray]:
-        inner_n_jobs = self._inner_n_jobs_for_parallel_models()
-        adapted_meta = ProbabilityAdapterClassifier(meta_estimator)
+        X: Any,
+        y: np.ndarray,
+        base_results: list[tuple[str, Any, np.ndarray]],
+    ) -> ForwardSelectionResult:
+        remaining = list(base_results)
+        if not remaining:
+            raise RuntimeError("No base model results available for forward selection.")
+
+        selected: list[tuple[str, Any, np.ndarray]] = []
+        best_single = max(remaining, key=lambda item: self._score_predictions(y, item[2]))
+        selected.append(best_single)
+        remaining.remove(best_single)
+        current_score = self._evaluate_meta_subset(X, y, selected)
+        self._log_forward_selection_step(
+            step=1,
+            selected_names=[best_single[0]],
+            score=current_score,
+            improvement=None,
+        )
+
+        while remaining:
+            best_candidate: tuple[str, Any, np.ndarray] | None = None
+            best_candidate_score = float("-inf")
+
+            for candidate in remaining:
+                trial_selected = selected + [candidate]
+                trial_score = self._evaluate_meta_subset(X, y, trial_selected)
+                if trial_score > best_candidate_score:
+                    best_candidate_score = trial_score
+                    best_candidate = candidate
+
+            if best_candidate is None:
+                break
+
+            improvement = best_candidate_score - current_score
+            if len(selected) >= self.min_base_models and improvement <= self.selection_tolerance:
+                break
+
+            selected.append(best_candidate)
+            remaining.remove(best_candidate)
+            current_score = best_candidate_score
+            self._log_forward_selection_step(
+                step=len(selected),
+                selected_names=[name for name, _, _ in selected],
+                score=current_score,
+                improvement=improvement,
+            )
+
+        return ForwardSelectionResult(
+            selected_names=[name for name, _, _ in selected],
+            score=current_score,
+        )
+
+    def _evaluate_meta_subset(
+        self,
+        X: Any,
+        y: np.ndarray,
+        selected_results: list[tuple[str, Any, np.ndarray]],
+    ) -> float:
+        blocks = [
+            self._stack_features_from_proba(oof_proba)
+            for _, _, oof_proba in selected_results
+        ]
+        stack_train_X = self._combine_meta_features(X, blocks)
+        splitter = StratifiedKFold(
+            n_splits=self.cv,
+            shuffle=True,
+            random_state=self.random_state,
+        )
+        _, meta_estimator = self._resolve_meta_estimator()
         meta_oof_proba = cross_val_predict(
-            adapted_meta,
+            ProbabilityAdapterClassifier(meta_estimator),
             stack_train_X,
             y,
             cv=splitter,
             method="predict_proba",
-            n_jobs=inner_n_jobs,
+            n_jobs=self.inner_n_jobs,
         )
-        fitted_meta = ProbabilityAdapterClassifier(meta_estimator)
-        fitted_meta.fit(stack_train_X, y)
-        return meta_name, fitted_meta, np.asarray(meta_oof_proba, dtype=float)
+        return self._score_predictions(y, np.asarray(meta_oof_proba, dtype=float))
+
+    def _resolve_meta_estimator(self) -> tuple[str, Any]:
+        if self.meta_estimators:
+            return self.meta_estimators[0][0], clone(self.meta_estimators[0][1])
+        defaults = make_default_meta_estimators(random_state=self.random_state)
+        return defaults[0][0], clone(defaults[0][1])
 
     def _inner_n_jobs_for_parallel_models(self) -> int | None:
         return self.inner_n_jobs
@@ -230,15 +273,9 @@ class StackedEnsembleClassifier(BaseEstimator, ClassifierMixin):
             "n_jobs": n_jobs if n_jobs is not None else self.n_jobs,
         }
         try:
-            return BaggingClassifier(
-                estimator=adapted_estimator,
-                **bagging_kwargs,
-            )
+            return BaggingClassifier(estimator=adapted_estimator, **bagging_kwargs)
         except TypeError:
-            return BaggingClassifier(
-                base_estimator=adapted_estimator,
-                **bagging_kwargs,
-            )
+            return BaggingClassifier(base_estimator=adapted_estimator, **bagging_kwargs)
 
     def _build_stack_features(self, X: Any) -> np.ndarray:
         blocks: list[np.ndarray] = []
@@ -247,179 +284,37 @@ class StackedEnsembleClassifier(BaseEstimator, ClassifierMixin):
             blocks.append(self._stack_features_from_proba(proba))
         return self._combine_meta_features(X, blocks)
 
-    def _predict_ensemble_candidates(
-        self,
-        X: Any,
-        stack_features: np.ndarray,
-    ) -> list[tuple[str, np.ndarray]]:
-        predictions: list[tuple[str, np.ndarray]] = []
-
-        for candidate_name, model in self.meta_models_:
-            predictions.append((candidate_name, np.asarray(model.predict_proba(stack_features), dtype=float)))
-
-        if self.include_base_predictions_in_final_ensemble:
-            for candidate_name, model in self.base_models_:
-                predictions.append((candidate_name, np.asarray(model.predict_proba(X), dtype=float)))
-
-        return predictions
-
-    def _fit_constrained_weighted_ensemble(
-        self,
-        *,
-        y: np.ndarray,
-        candidate_predictions: list[tuple[str, np.ndarray]],
-    ) -> EnsembleSelectionResult:
-        sampled_y, sampled_candidate_predictions = self._sample_weight_optimization_data(
-            y,
-            candidate_predictions,
-        )
-        if self.final_weight_optimizer == "greedy":
-            return self._fit_greedy_weighted_ensemble(
-                y=sampled_y,
-                candidate_predictions=sampled_candidate_predictions,
-            )
-        if self.final_weight_optimizer != "slsqp":
-            raise ValueError(
-                f"Unsupported final_weight_optimizer `{self.final_weight_optimizer}`. "
-                "Expected one of: greedy, slsqp."
-            )
-
-        candidate_names = [name for name, _ in candidate_predictions]
-        prediction_tensor = np.stack(
-            [np.asarray(prediction, dtype=float) for _, prediction in sampled_candidate_predictions],
-            axis=0,
-        )
-        n_candidates = prediction_tensor.shape[0]
-
-        def objective(weights: np.ndarray) -> float:
-            blended = np.tensordot(weights, prediction_tensor, axes=(0, 0))
-            blended = np.clip(blended, 1e-15, 1.0 - 1e-15)
-            blended = blended / blended.sum(axis=1, keepdims=True)
-            return float(log_loss(sampled_y, blended, labels=self.classes_))
-
-        initial_weights = np.full(n_candidates, 1.0 / n_candidates, dtype=float)
-        constraints = [{"type": "eq", "fun": lambda w: float(np.sum(w) - 1.0)}]
-        bounds = [(0.0, 1.0)] * n_candidates
-        result = minimize(
-            objective,
-            initial_weights,
-            method="SLSQP",
-            bounds=bounds,
-            constraints=constraints,
-            options={"maxiter": max(50, (self.ensemble_iterations or n_candidates * 25))},
-        )
-
-        if result.success and np.all(np.isfinite(result.x)):
-            optimized_weights = np.clip(np.asarray(result.x, dtype=float), 0.0, 1.0)
-            total = optimized_weights.sum()
-            if total > 0:
-                optimized_weights = optimized_weights / total
-            else:
-                optimized_weights = initial_weights
-        else:
-            optimized_weights = initial_weights
-
-        blended = np.tensordot(optimized_weights, prediction_tensor, axes=(0, 0))
-        blended = np.clip(blended, 1e-15, 1.0 - 1e-15)
-        blended = blended / blended.sum(axis=1, keepdims=True)
-        current_score = self._score_predictions(sampled_y, blended)
-        return EnsembleSelectionResult(
-            candidate_names=candidate_names,
-            weights=optimized_weights,
-            score=current_score,
-        )
-
-    def _fit_greedy_weighted_ensemble(
-        self,
-        *,
-        y: np.ndarray,
-        candidate_predictions: list[tuple[str, np.ndarray]],
-    ) -> EnsembleSelectionResult:
-        candidate_names = [name for name, _ in candidate_predictions]
-        prediction_tensor = np.stack(
-            [np.asarray(prediction, dtype=float) for _, prediction in candidate_predictions],
-            axis=0,
-        )
-        n_candidates = prediction_tensor.shape[0]
-        n_iterations = self.ensemble_iterations or max(20, n_candidates * 10)
-
-        ensemble_sum = np.zeros_like(prediction_tensor[0], dtype=float)
-        selection_counts = np.zeros(n_candidates, dtype=float)
-
-        for iteration in range(n_iterations):
-            best_idx = 0
-            best_loss = float("inf")
-            for idx in range(n_candidates):
-                trial_blended = (ensemble_sum + prediction_tensor[idx]) / float(iteration + 1)
-                trial_blended = np.clip(trial_blended, 1e-15, 1.0 - 1e-15)
-                trial_blended = trial_blended / trial_blended.sum(axis=1, keepdims=True)
-                trial_loss = float(log_loss(y, trial_blended, labels=self.classes_))
-                if trial_loss < best_loss:
-                    best_loss = trial_loss
-                    best_idx = idx
-
-            ensemble_sum += prediction_tensor[best_idx]
-            selection_counts[best_idx] += 1.0
-
-        weights = selection_counts / max(selection_counts.sum(), 1.0)
-        blended = ensemble_sum / max(float(n_iterations), 1.0)
-        blended = np.clip(blended, 1e-15, 1.0 - 1e-15)
-        blended = blended / blended.sum(axis=1, keepdims=True)
-        current_score = self._score_predictions(y, blended)
-        return EnsembleSelectionResult(
-            candidate_names=candidate_names,
-            weights=weights,
-            score=current_score,
-        )
-
-    def _sample_weight_optimization_data(
-        self,
-        y: np.ndarray,
-        candidate_predictions: list[tuple[str, np.ndarray]],
-    ) -> tuple[np.ndarray, list[tuple[str, np.ndarray]]]:
-        if len(y) <= self._WEIGHT_OPTIMIZATION_SAMPLE_SIZE:
-            return y, candidate_predictions
-
-        splitter = StratifiedShuffleSplit(
-            n_splits=1,
-            train_size=self._WEIGHT_OPTIMIZATION_SAMPLE_SIZE,
-            random_state=self.random_state,
-        )
-        indices, _ = next(splitter.split(np.zeros(len(y)), y))
-        sampled_predictions = [
-            (name, np.asarray(prediction, dtype=float)[indices])
-            for name, prediction in candidate_predictions
-        ]
-        return np.asarray(y)[indices], sampled_predictions
-
-    def _weight_for_candidate(self, candidate_name: str) -> float:
-        for idx, name in enumerate(self.ensemble_selection_.candidate_names):
-            if name == candidate_name:
-                return float(self.ensemble_selection_.weights[idx])
-        return 0.0
-
     def _log_ensemble_structure(self) -> None:
         if self.verbose <= 0:
             return
-
         print("[AutoML] Stacked ensemble summary")
-        print(f"[AutoML] Layer 1 models: {', '.join(self.base_model_names_)}")
+        print(f"[AutoML] Selected base models: {', '.join(self.base_model_names_)}")
+        print(f"[AutoML] Meta model: {self.meta_model_name_}")
         print(
-            f"[AutoML] Layer 2 models: {', '.join(self.meta_model_names_)} "
+            f"[AutoML] Forward selection score: {self.forward_selection_.score:.6f} "
             f"(uses original features={self.include_original_features_in_meta})"
         )
-        print(f"[AutoML] Final weight optimizer: {self.final_weight_optimizer}")
 
-        weighted_parts: list[str] = []
-        for name, weight in zip(
-            self.ensemble_selection_.candidate_names,
-            self.ensemble_selection_.weights,
-        ):
-            if weight > 0:
-                weighted_parts.append(f"{name}={weight:.3f}")
-        if not weighted_parts:
-            weighted_parts.append("none")
-        print(f"[AutoML] Final weighted ensemble: {', '.join(weighted_parts)}")
+    def _log_forward_selection_step(
+        self,
+        *,
+        step: int,
+        selected_names: list[str],
+        score: float,
+        improvement: float | None,
+    ) -> None:
+        if self.verbose <= 0:
+            return
+        if improvement is None:
+            print(
+                f"[AutoML] Forward selection step {step}: "
+                f"selected {selected_names[-1]} score={score:.6f}"
+            )
+            return
+        print(
+            f"[AutoML] Forward selection step {step}: "
+            f"added {selected_names[-1]} score={score:.6f} improvement={improvement:.6f}"
+        )
 
     def _score_predictions(self, y_true: np.ndarray, proba: np.ndarray) -> float:
         y_pred = self.classes_[np.argmax(proba, axis=1)]
@@ -494,15 +389,6 @@ class StackedEnsembleClassifier(BaseEstimator, ClassifierMixin):
 
 def make_default_meta_estimators(random_state: int | None = None) -> list[tuple[str, Any]]:
     return [
-        (
-            "meta_random_forest",
-            RandomForestClassifier(
-                n_estimators=300,
-                max_depth=6,
-                min_samples_leaf=2,
-                random_state=random_state,
-            ),
-        ),
         (
             "meta_logistic_regression",
             LogisticRegression(

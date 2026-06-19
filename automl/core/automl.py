@@ -6,16 +6,18 @@ from typing import Any
 import numpy as np
 from joblib import Parallel, delayed
 from sklearn.base import clone
-from sklearn.ensemble import VotingClassifier
-from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit, cross_val_predict, cross_val_score
+from sklearn.ensemble import VotingClassifier, VotingRegressor
+from sklearn.model_selection import KFold, StratifiedKFold, StratifiedShuffleSplit, cross_val_predict, cross_val_score
 
 from ..configspace_search_space import (
     configuration_to_dict,
     get_classification_configspace,
+    get_regression_configspace,
 )
-from ..evaluation import ClassificationEvaluator, FidelitySpec
+from ..evaluation import ClassificationEvaluator, FidelitySpec, RegressionEvaluator
 from ..meta_learning import (
     compute_basic_classification_metafeatures,
+    compute_basic_regression_metafeatures,
     get_meta_learning_warmstarts,
 )
 from ..optimization.smac_optimizer import SMACOptimizationResult, SMACOptimizer
@@ -23,6 +25,10 @@ from ..stacked_ensemble import (
     ProbabilityAdapterClassifier,
     StackedEnsembleClassifier,
     make_default_meta_estimators,
+)
+from ..stacked_ensemble_regression import (
+    StackedEnsembleRegressor,
+    make_default_regression_meta_estimators,
 )
 
 
@@ -71,13 +77,14 @@ class AutoMLEngine:
         stacked_bagging_n_estimators: int = 5,
         stacked_meta_model_names: list[str] | None = None,
         stacked_include_base_predictions: bool = True,
-        stacked_include_original_features_in_meta: bool = True,
+        stacked_include_original_features_in_meta: bool = False,
         stacked_final_weight_optimizer: str = "greedy",
         n_jobs: int | None = None,
         search_n_parallel: int = 3,
         stack_n_jobs: int | None = None,
         inner_n_jobs: int | None = 1,
         verbose: int = 1,
+        disable_evaluation_timeout: bool = False,
         balance_classes: bool = False,
         allowed_models: list[str] | None = None,
         use_meta_learning: bool = True,
@@ -98,7 +105,7 @@ class AutoMLEngine:
         self.ensemble_strategy = ensemble_strategy
         self.stacked_base_size = stacked_base_size
         self.stacked_bagging_n_estimators = stacked_bagging_n_estimators
-        self.stacked_meta_model_names = ["random_forest", "logistic_regression"]
+        self.stacked_meta_model_names = list(stacked_meta_model_names) if stacked_meta_model_names is not None else None
         self.stacked_include_base_predictions = stacked_include_base_predictions
         self.stacked_include_original_features_in_meta = stacked_include_original_features_in_meta
         self.stacked_final_weight_optimizer = stacked_final_weight_optimizer
@@ -107,6 +114,7 @@ class AutoMLEngine:
         self.stack_n_jobs = n_jobs if stack_n_jobs is None else stack_n_jobs
         self.inner_n_jobs = inner_n_jobs
         self.verbose = verbose
+        self.disable_evaluation_timeout = disable_evaluation_timeout
         self.balance_classes = balance_classes
         self.allowed_models = allowed_models
         self.use_meta_learning = use_meta_learning
@@ -116,9 +124,9 @@ class AutoMLEngine:
         self.max_meta_learning_warmstarts = max_meta_learning_warmstarts
 
     def search(self, X: Any, y: Any) -> AutoMLResult:
-        if self.task != "classification":
+        if self.task not in {"classification", "regression"}:
             raise NotImplementedError(
-                "AutoMLEngine currently supports classification only."
+                "AutoMLEngine currently supports classification and regression only."
             )
 
         effective_allowed_models = self._resolve_allowed_models(X)
@@ -143,14 +151,12 @@ class AutoMLEngine:
             y,
             preprocessing=incumbent_evaluation.preprocessing,
         )
-        ensemble_model = self._build_ensemble(cv_results, evaluator, X, y)
+        ensemble_model, ensemble_score = self._build_ensemble(cv_results, evaluator, X, y)
         best_model_score = float(incumbent_evaluation.score)
-        ensemble_score = None
         final_model = best_model
         final_score = best_model_score
 
-        if ensemble_model is not None:
-            ensemble_score = self._evaluate_estimator(ensemble_model, X, y)
+        if ensemble_model is not None and ensemble_score is not None:
             leaderboard = self._append_ensemble_to_leaderboard(
                 leaderboard=leaderboard,
                 ensemble_score=ensemble_score,
@@ -171,15 +177,25 @@ class AutoMLEngine:
         )
 
     def _build_configspace(self, allowed_models: list[str] | None):
-        return get_classification_configspace(allowed_models=allowed_models)
+        if self.task == "classification":
+            return get_classification_configspace(allowed_models=allowed_models)
+        return get_regression_configspace(allowed_models=allowed_models)
 
-    def _build_evaluator(self) -> ClassificationEvaluator:
-        return ClassificationEvaluator(
+    def _build_evaluator(self):
+        if self.task == "classification":
+            return ClassificationEvaluator(
+                cv=self.cv,
+                scoring=self.scoring,
+                random_state=self.random_state,
+                n_jobs=self.inner_n_jobs,
+                balance_classes=self.balance_classes,
+                per_run_time_limit=self._resolve_per_run_time_limit(),
+            )
+        return RegressionEvaluator(
             cv=self.cv,
             scoring=self.scoring,
             random_state=self.random_state,
             n_jobs=self.inner_n_jobs,
-            balance_classes=self.balance_classes,
             per_run_time_limit=self._resolve_per_run_time_limit(),
         )
 
@@ -236,9 +252,9 @@ class AutoMLEngine:
         evaluator: ClassificationEvaluator,
         X: Any,
         y: Any,
-    ) -> Any:
+    ) -> tuple[Any, float | None]:
         if not self.ensemble:
-            return None
+            return None, None
 
         effective_ensemble_strategy = self._resolve_ensemble_strategy(X)
 
@@ -246,6 +262,9 @@ class AutoMLEngine:
             return self._build_stacked_ensemble(cv_results, evaluator, X, y)
         if effective_ensemble_strategy != "voting":
             raise ValueError(f"Unsupported ensemble strategy `{effective_ensemble_strategy}`.")
+
+        if self.task == "regression":
+            return self._build_regression_voting_ensemble(cv_results, evaluator, X, y)
 
         ranked_rows = [
             row
@@ -258,7 +277,7 @@ class AutoMLEngine:
         ]
 
         if len(ranked_rows) < 2:
-            return None
+            return None, None
 
         candidate_estimators: list[tuple[tuple[Any, ...], str, Any]] = []
         seen_signatures: set[tuple[Any, ...]] = set()
@@ -285,7 +304,7 @@ class AutoMLEngine:
                 break
 
         if len(candidate_estimators) < 2:
-            return None
+            return None, None
 
         selected_estimators: list[tuple[str, Any]] = []
         remaining_candidates = list(candidate_estimators)
@@ -316,7 +335,7 @@ class AutoMLEngine:
             best_ensemble_score = best_candidate_score
 
         if len(selected_estimators) < 2:
-            return None
+            return None, None
 
         ensemble_model = VotingClassifier(
             estimators=selected_estimators,
@@ -324,7 +343,70 @@ class AutoMLEngine:
             n_jobs=self.inner_n_jobs,
         )
         ensemble_model.fit(X, y)
-        return ensemble_model
+        return ensemble_model, float(best_ensemble_score)
+
+    def _build_regression_voting_ensemble(
+        self,
+        cv_results: list[dict[str, Any]],
+        evaluator: Any,
+        X: Any,
+        y: Any,
+    ) -> tuple[Any, float | None]:
+        ranked_rows = [
+            row
+            for row in sorted(cv_results, key=lambda item: item.get("score", float("-inf")), reverse=True)
+            if row.get("status") == "success" and row.get("config") is not None
+        ]
+        if len(ranked_rows) < 2:
+            return None, None
+
+        candidate_estimators: list[tuple[tuple[Any, ...], str, Any]] = []
+        seen_signatures: set[tuple[Any, ...]] = set()
+        for row in ranked_rows:
+            config_dict = configuration_to_dict(row["config"])
+            signature = (
+                config_dict["model_name"],
+                tuple(sorted(config_dict["params"].items())),
+                row.get("preprocessing", "none"),
+            )
+            if signature in seen_signatures:
+                continue
+            estimator = evaluator.build_model(
+                config_dict["model_name"],
+                config_dict["params"],
+                preprocessing=row.get("preprocessing", "none"),
+            )
+            candidate_estimators.append((signature, f"{config_dict['model_name']}_{len(candidate_estimators)}", estimator))
+            seen_signatures.add(signature)
+            if len(candidate_estimators) >= max(self.ensemble_size * 3, self.ensemble_size):
+                break
+
+        if len(candidate_estimators) < 2:
+            return None, None
+
+        selected_estimators: list[tuple[str, Any]] = []
+        remaining_candidates = list(candidate_estimators)
+        best_ensemble_score = float("-inf")
+        while remaining_candidates and len(selected_estimators) < self.ensemble_size:
+            best_candidate_idx: int | None = None
+            best_candidate_score = best_ensemble_score
+            for idx, (_, candidate_name, candidate_estimator) in enumerate(remaining_candidates):
+                trial_ensemble = VotingRegressor(estimators=selected_estimators + [(candidate_name, candidate_estimator)])
+                trial_score = self._evaluate_estimator(trial_ensemble, X, y)
+                if trial_score > best_candidate_score:
+                    best_candidate_score = trial_score
+                    best_candidate_idx = idx
+            if best_candidate_idx is None:
+                break
+            _, candidate_name, candidate_estimator = remaining_candidates.pop(best_candidate_idx)
+            selected_estimators.append((candidate_name, candidate_estimator))
+            best_ensemble_score = best_candidate_score
+
+        if len(selected_estimators) < 2:
+            return None, None
+        ensemble_model = VotingRegressor(estimators=selected_estimators)
+        ensemble_model.fit(X, y)
+        return ensemble_model, float(best_ensemble_score)
 
     def _resolve_ensemble_strategy(self, X: Any) -> str:
         n_rows = len(X) if hasattr(X, "__len__") else 0
@@ -340,10 +422,10 @@ class AutoMLEngine:
     def _build_stacked_ensemble(
         self,
         cv_results: list[dict[str, Any]],
-        evaluator: ClassificationEvaluator,
+        evaluator: Any,
         X: Any,
         y: Any,
-    ) -> Any:
+    ) -> tuple[Any, float | None]:
         ranked_rows = [
             row
             for row in sorted(
@@ -354,15 +436,33 @@ class AutoMLEngine:
             if row.get("status") == "success" and row.get("config") is not None
         ]
         if len(ranked_rows) < 2:
-            return None
+            return None, None
 
         base_estimators = self._select_diverse_base_estimators(ranked_rows, evaluator, X, y)
-        if len(base_estimators) < 2:
-            return None
+        if len(base_estimators) < 3:
+            return None, None
 
         meta_estimators = self._select_meta_estimators(ranked_rows, evaluator)
-        if len(meta_estimators) < 2:
-            return None
+        if len(meta_estimators) < 1:
+            return None, None
+
+        if self.task == "regression":
+            ensemble_model = StackedEnsembleRegressor(
+                base_estimators=base_estimators,
+                meta_estimators=meta_estimators,
+                cv=self.cv,
+                random_state=self.random_state,
+                n_jobs=self.stack_n_jobs,
+                inner_n_jobs=self.inner_n_jobs,
+                bagging_n_estimators=self.stacked_bagging_n_estimators,
+                include_base_predictions_in_final_ensemble=self.stacked_include_base_predictions,
+                include_original_features_in_meta=self.stacked_include_original_features_in_meta,
+                final_weight_optimizer=self.stacked_final_weight_optimizer,
+                scoring=self.scoring,
+                verbose=self.verbose,
+            )
+            ensemble_model.fit(X, y)
+            return ensemble_model, float(ensemble_model.forward_selection_.score)
 
         ensemble_model = StackedEnsembleClassifier(
             base_estimators=base_estimators,
@@ -379,7 +479,7 @@ class AutoMLEngine:
             verbose=self.verbose,
         )
         ensemble_model.fit(X, y)
-        return ensemble_model
+        return ensemble_model, float(ensemble_model.forward_selection_.score)
 
     def _select_diverse_base_estimators(
         self,
@@ -390,7 +490,7 @@ class AutoMLEngine:
     ) -> list[tuple[str, Any]]:
         candidate_rows: list[tuple[str, Any, float]] = []
         seen_signatures: set[tuple[Any, ...]] = set()
-        candidate_pool_size = max(self.stacked_base_size * 3, self.stacked_base_size)
+        candidate_pool_size = 10
 
         for row in ranked_rows:
             config_dict = configuration_to_dict(row["config"])
@@ -415,17 +515,7 @@ class AutoMLEngine:
             if len(candidate_rows) >= candidate_pool_size:
                 break
 
-        if len(candidate_rows) <= self.stacked_base_size:
-            return [(name, estimator) for name, estimator, _ in candidate_rows]
-
-        candidate_predictions = self._get_candidate_oof_probabilities(candidate_rows, X, y)
-        if len(candidate_predictions) <= self.stacked_base_size:
-            return [(candidate.name, candidate.estimator) for candidate in candidate_predictions]
-
-        return [
-            (candidate.name, candidate.estimator)
-            for candidate in self._greedy_select_diverse_candidates(candidate_predictions)
-        ]
+        return [(name, estimator) for name, estimator, _ in candidate_rows]
 
     def _get_candidate_oof_probabilities(
         self,
@@ -578,17 +668,38 @@ class AutoMLEngine:
     def _select_meta_estimators(
         self,
         ranked_rows: list[dict[str, Any]],
-        evaluator: ClassificationEvaluator,
+        evaluator: Any,
     ) -> list[tuple[str, Any]]:
         _ = ranked_rows, evaluator
-        return make_default_meta_estimators(random_state=self.random_state)
+        defaults = (
+            make_default_regression_meta_estimators(random_state=self.random_state)
+            if self.task == "regression"
+            else make_default_meta_estimators(random_state=self.random_state)
+        )
+        if not self.stacked_meta_model_names:
+            return defaults
+
+        alias_map: dict[str, tuple[str, Any]] = {}
+        for name, estimator in defaults:
+            alias_map[name] = (name, estimator)
+            normalized = name.replace("meta_", "").replace("_regressor", "").replace("_classifier", "")
+            alias_map[normalized] = (name, estimator)
+        selected = [alias_map[name] for name in self.stacked_meta_model_names if name in alias_map]
+        return selected or defaults
 
     def _evaluate_estimator(self, estimator: Any, X: Any, y: Any) -> float:
-        splitter = StratifiedKFold(
-            n_splits=self.cv,
-            shuffle=True,
-            random_state=self.random_state,
-        )
+        if self.task == "classification":
+            splitter = StratifiedKFold(
+                n_splits=self.cv,
+                shuffle=True,
+                random_state=self.random_state,
+            )
+        else:
+            splitter = KFold(
+                n_splits=self.cv,
+                shuffle=True,
+                random_state=self.random_state,
+            )
         scores = cross_val_score(
             clone(estimator),
             X,
@@ -641,7 +752,7 @@ class AutoMLEngine:
                 "params": {
                     "stacked_base_size": self.stacked_base_size,
                     "stacked_bagging_n_estimators": self.stacked_bagging_n_estimators,
-                    "stacked_meta_model_names": list(self.stacked_meta_model_names),
+                    "stacked_meta_model_names": list(self.stacked_meta_model_names or []),
                     "include_base_predictions": self.stacked_include_base_predictions,
                     "include_original_features_in_meta": self.stacked_include_original_features_in_meta,
                     "final_weight_optimizer": self.stacked_final_weight_optimizer,
@@ -668,24 +779,35 @@ class AutoMLEngine:
         disabled_models: list[str] = []
         n_samples = len(X) if hasattr(X, "__len__") else 0
 
-        if n_samples >= 10_000:
-            disabled_models.append("knn")
-            disabled_models.append("gaussian_process")
-        if n_samples >= 50_000:
-            disabled_models.append("svc")
-            disabled_models.append("mlp")
-
-        if self._features_have_negative_values(X):
-            disabled_models.append("multinomial_nb")
+        if self.task == "classification":
+            if n_samples >= 10_000:
+                disabled_models.append("knn")
+                disabled_models.append("gaussian_process")
+            if n_samples >= 50_000:
+                disabled_models.append("svc")
+                disabled_models.append("mlp")
+            if self._features_have_negative_values(X):
+                disabled_models.append("multinomial_nb")
+        else:
+            if n_samples >= 10_000:
+                disabled_models.append("gaussian_process")
+            if n_samples >= 50_000:
+                disabled_models.append("libsvm_svr")
+                disabled_models.append("mlp")
 
         if not disabled_models:
             return candidate_models
 
         disabled_set = set(disabled_models)
         if candidate_models is None:
+            configspace = (
+                get_classification_configspace()
+                if self.task == "classification"
+                else get_regression_configspace()
+            )
             filtered_models = [
                 model_name
-                for model_name in get_classification_configspace().get_hyperparameter("model_name").choices
+                for model_name in configspace.get_hyperparameter("model_name").choices
                 if model_name not in disabled_set
             ]
         else:
@@ -723,12 +845,17 @@ class AutoMLEngine:
         return "hard"
 
     def _get_meta_learning_warmstarts(self, configspace: Any, X: Any, y: Any) -> list[Any]:
-        if not self.use_meta_learning or self.task != "classification":
+        if not self.use_meta_learning or self.task not in {"classification", "regression"}:
             return []
 
         try:
-            metafeatures = compute_basic_classification_metafeatures(X, y)
+            metafeatures = (
+                compute_basic_classification_metafeatures(X, y)
+                if self.task == "classification"
+                else compute_basic_regression_metafeatures(X, y)
+            )
             warmstarts = get_meta_learning_warmstarts(
+                task=self.task,
                 y=y,
                 metafeatures=metafeatures,
                 configspace=configspace,
@@ -747,6 +874,9 @@ class AutoMLEngine:
         return warmstarts
 
     def _resolve_per_run_time_limit(self) -> float | None:
+        if self.disable_evaluation_timeout:
+            return None
+
         if self.per_run_time_limit is not None:
             return float(self.per_run_time_limit)
 
